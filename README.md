@@ -39,11 +39,11 @@ npm run dev
 
 ## Auteur
 
-Jean-Louis Zola, **F4IXH** ([fiche QRZ](https://www.qrz.com/db/F4IXH))
+Jean-Louis Zola, **F4IXH** ([voir sur QRZ.com](https://www.qrz.com/db/F4IXH))
 
 Application gratuite pour la communauté des radioamateurs, sans contrôle ni
 modération — c'est l'esprit radioamateur. Si elle te rend service, un petit
-tip fait toujours plaisir : [☕ paypal.me/F4IXH](https://www.paypal.me/F4IXH/2EUR)
+tip fait toujours plaisir : [☕ paypal.me/jlzola](https://www.paypal.me/jlzola/2EUR)
 
 ## Licence
 
