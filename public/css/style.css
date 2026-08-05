@@ -179,6 +179,7 @@ textarea:focus {
   padding: 0.65rem 0.85rem;
   border: 1px solid var(--border);
   border-radius: 14px;
+  margin-top: 1.25rem;
   margin-bottom: 1.25rem;
 }
 

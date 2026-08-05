@@ -8,8 +8,8 @@ function buildOperatorRow({ call = '', locator = '', department = '' } = {}) {
   row.className = 'operator-row';
   row.innerHTML = `
     <input type="text" name="operatorCall" aria-label="Indicatif" placeholder="Indicatif (ex. F4IXH)" required>
-    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)">
-    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)">
+    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)" required>
+    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)" required>
     <button type="button" class="btn-danger btn-small remove-operator">Retirer</button>
   `;
   row.querySelector('[name="operatorCall"]').value = call;

@@ -3,16 +3,16 @@
   {{#each values.operators}}
   <div class="operator-row">
     <input type="text" name="operatorCall" aria-label="Indicatif" placeholder="Indicatif (ex. F4IXH)" required value="{{this.call}}">
-    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)" value="{{this.locator}}">
-    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)" value="{{this.department}}">
+    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)" required value="{{this.locator}}">
+    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)" required value="{{this.department}}">
     <button type="button" class="btn-danger btn-small remove-operator">Retirer</button>
   </div>
   {{/each}}
   {{else}}
   <div class="operator-row">
     <input type="text" name="operatorCall" aria-label="Indicatif" placeholder="Indicatif (ex. F4IXH)" required>
-    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)">
-    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)">
+    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)" required>
+    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)" required>
     <button type="button" class="btn-danger btn-small remove-operator">Retirer</button>
   </div>
   {{/if}}
