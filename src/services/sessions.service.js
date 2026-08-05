@@ -58,15 +58,24 @@ function normalizeOperators(operators) {
     }));
 }
 
-function validateSessionInput({ name, startDate, endDate, operators }) {
+function validateSessionInput({ name, startDate, endDate, operators, creatorCall, creatorFirstName }) {
   if (!name?.trim()) throw new Error('Le nom de la session est obligatoire');
   if (!startDate || !endDate) throw new Error('Les dates de début et de fin sont obligatoires');
   if (startDate > endDate) throw new Error('La date de fin doit être postérieure à la date de début');
+  if (!creatorCall?.trim() || !creatorFirstName?.trim()) {
+    throw new Error("L'indicatif et le prénom du créateur de la session sont obligatoires");
+  }
 
   const cleanOperators = normalizeOperators(operators);
   if (cleanOperators.length === 0) throw new Error('Au moins un opérateur est requis');
 
-  return cleanOperators;
+  return {
+    operators: cleanOperators,
+    creator: {
+      call: creatorCall.trim().toUpperCase(),
+      firstName: creatorFirstName.trim()
+    }
+  };
 }
 
 export async function listSessions() {
@@ -89,14 +98,17 @@ export async function getSession(id) {
   return { ...session, status, dateInfo: describeDates(session, now, status) };
 }
 
-export async function createSession({ name, startDate, endDate, operators }) {
-  const cleanOperators = validateSessionInput({ name, startDate, endDate, operators });
+export async function createSession({ name, startDate, endDate, operators, creatorCall, creatorFirstName }) {
+  const { operators: cleanOperators, creator } = validateSessionInput({
+    name, startDate, endDate, operators, creatorCall, creatorFirstName
+  });
 
   const session = {
     id: randomUUID(),
     name: name.trim(),
     startDate,
     endDate,
+    creator,
     operators: cleanOperators,
     closedAt: null,
     createdAt: new Date().toISOString()
@@ -105,13 +117,16 @@ export async function createSession({ name, startDate, endDate, operators }) {
   return addSession(session);
 }
 
-export async function editSession(id, { name, startDate, endDate, operators }) {
-  const cleanOperators = validateSessionInput({ name, startDate, endDate, operators });
+export async function editSession(id, { name, startDate, endDate, operators, creatorCall, creatorFirstName }) {
+  const { operators: cleanOperators, creator } = validateSessionInput({
+    name, startDate, endDate, operators, creatorCall, creatorFirstName
+  });
 
   const updated = await updateSession(id, {
     name: name.trim(),
     startDate,
     endDate,
+    creator,
     operators: cleanOperators
   });
   if (!updated) throw new Error('Session inconnue');

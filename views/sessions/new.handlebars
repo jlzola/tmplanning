@@ -19,6 +19,17 @@
 
     <div class="date-row">
       <label>
+        Indicatif du créateur
+        <input type="text" name="creatorCall" required value="{{values.creator.call}}" placeholder="ex. F4IXH">
+      </label>
+      <label>
+        Prénom du créateur
+        <input type="text" name="creatorFirstName" required value="{{values.creator.firstName}}" placeholder="ex. Jelo">
+      </label>
+    </div>
+
+    <div class="date-row">
+      <label>
         Date de début
         <input type="date" name="startDate" required value="{{values.startDate}}">
       </label>

@@ -11,6 +11,13 @@
         {{formatDate session.startDate}} → {{formatDate session.endDate}}
         <span class="date-info">· {{session.dateInfo}}</span>
       </p>
+      {{#if session.creator}}
+      <p class="session-creator">Créée par {{session.creator.call}} {{session.creator.firstName}}</p>
+      {{else}}
+      <p class="session-creator session-creator-empty">
+        Créateur non renseigné · <a href="/sessions/{{session.id}}/edit">compléter</a>
+      </p>
+      {{/if}}
     </div>
     <div class="session-actions">
       <a href="/sessions/{{session.id}}/edit" class="btn-icon" title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>

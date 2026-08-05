@@ -1,9 +1,10 @@
 <section class="hero">
-  <h1>{{appName}}</h1>
+  <span class="eyebrow">📡 Pour les radioamateurs</span>
+
   <p class="pitch">
-    L'outil des radioamateurs pour coordonner leurs bandes en direct : chaque
-    opérateur déclare la bande et le mode qu'il utilise pendant une session
-    TM.
+    L'outil des radioamateurs pour coordonner l'utilisation des bandes pendant une session
+    TM multi-opérateurs.<br><br><i>Chaque opérateur déclare la bande et le mode qu'il utilise. Les autres voient les
+      bandes et les modes utilisés.</i>
   </p>
   <div class="hero-actions">
     <a class="btn" href="/sessions/new">+ Nouvelle session</a>
@@ -17,18 +18,20 @@
   <div class="session-list">
     {{#each sessions}}
     <a class="session-card status-{{this.status}}" href="/sessions/{{this.id}}">
+      <div class="session-card-watermark" aria-hidden="true"></div>
       <div class="session-card-header">
         <h3>{{this.name}}</h3>
         <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
       </div>
-      <p class="session-dates">
-        {{formatDate this.startDate}} → {{formatDate this.endDate}}
-        <span class="date-info">· {{this.dateInfo}}</span>
-      </p>
+      <p class="session-dates">📅 {{formatDate this.startDate}} → {{formatDate this.endDate}}</p>
+      <p class="date-info">⏳ {{this.dateInfo}}</p>
+      {{#if this.creator}}
+      <p class="session-creator">✍️ créé par {{this.creator.call}} {{this.creator.firstName}}</p>
+      {{/if}}
       <div class="session-card-footer">
-        <span>{{this.operators.length}} opérateur(s)</span>
+        <span>👥 {{this.operators.length}} opérateur(s)</span>
         <span class="chip {{#if this.occupiedCount}}chip-busy{{else}}chip-free{{/if}}">
-          {{this.occupiedCount}}/{{this.totalSlots}} slots occupées
+          📡 {{this.occupiedCount}}/{{this.totalSlots}} occupées
         </span>
       </div>
     </a>

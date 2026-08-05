@@ -38,17 +38,17 @@ export function showNewSessionForm(req, res) {
 }
 
 export async function create(req, res) {
-  const { name, startDate, endDate } = req.body;
+  const { name, startDate, endDate, creatorCall, creatorFirstName } = req.body;
   const operators = zipOperators(req.body);
 
   try {
-    const session = await createSession({ name, startDate, endDate, operators });
+    const session = await createSession({ name, startDate, endDate, operators, creatorCall, creatorFirstName });
     res.redirect(`/sessions/${session.id}`);
   } catch (err) {
     res.status(400).render('sessions/new', {
       title: 'Nouvelle session',
       error: err.message,
-      values: { name, startDate, endDate, operators }
+      values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } }
     });
   }
 }
@@ -87,11 +87,13 @@ export async function showEditSessionForm(req, res, next) {
 }
 
 export async function update(req, res, next) {
-  const { name, startDate, endDate } = req.body;
+  const { name, startDate, endDate, creatorCall, creatorFirstName } = req.body;
   const operators = zipOperators(req.body);
 
   try {
-    const session = await editSession(req.params.id, { name, startDate, endDate, operators });
+    const session = await editSession(req.params.id, {
+      name, startDate, endDate, operators, creatorCall, creatorFirstName
+    });
     res.redirect(`/sessions/${session.id}`);
   } catch (err) {
     try {
@@ -101,7 +103,7 @@ export async function update(req, res, next) {
         title: `Modifier ${session.name}`,
         session,
         error: err.message,
-        values: { name, startDate, endDate, operators }
+        values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } }
       });
     } catch (renderErr) {
       next(renderErr);
@@ -151,6 +153,7 @@ export async function exportJson(req, res, next) {
       name: session.name,
       startDate: session.startDate,
       endDate: session.endDate,
+      creator: session.creator,
       operators: session.operators
     };
 

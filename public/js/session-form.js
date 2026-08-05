@@ -7,10 +7,10 @@ function buildOperatorRow({ call = '', locator = '', department = '' } = {}) {
   const row = document.createElement('div');
   row.className = 'operator-row';
   row.innerHTML = `
-    <input type="text" name="operatorCall" placeholder="Indicatif (ex. F4IXH)" required>
-    <input type="text" name="operatorLocator" placeholder="Locator (ex. JN23rl)">
-    <input type="text" name="operatorDepartment" placeholder="Département (ex. 13)">
-    <button type="button" class="btn-danger remove-operator">Retirer</button>
+    <input type="text" name="operatorCall" aria-label="Indicatif" placeholder="Indicatif (ex. F4IXH)" required>
+    <input type="text" name="operatorLocator" aria-label="Locator" placeholder="Locator (ex. JN23rl)">
+    <input type="text" name="operatorDepartment" aria-label="Département" placeholder="Département (ex. 13)">
+    <button type="button" class="btn-danger btn-small remove-operator">Retirer</button>
   `;
   row.querySelector('[name="operatorCall"]').value = call;
   row.querySelector('[name="operatorLocator"]').value = locator;
@@ -94,6 +94,8 @@ if (jsonInput) {
         document.querySelector('[name="name"]').value = data.name ?? '';
         document.querySelector('[name="startDate"]').value = data.startDate ?? '';
         document.querySelector('[name="endDate"]').value = data.endDate ?? '';
+        document.querySelector('[name="creatorCall"]').value = data.creator?.call ?? '';
+        document.querySelector('[name="creatorFirstName"]').value = data.creator?.firstName ?? '';
 
         rowsContainer.innerHTML = '';
         const operators = Array.isArray(data.operators) ? data.operators : [];
