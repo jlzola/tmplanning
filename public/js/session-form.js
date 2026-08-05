@@ -7,9 +7,9 @@ function buildOperatorRow({ call = '', locator = '', department = '' } = {}) {
   const row = document.createElement('div');
   row.className = 'operator-row';
   row.innerHTML = `
-    <input type="text" name="operatorCall" placeholder="Indicatif (ex. F2DX)" required>
-    <input type="text" name="operatorLocator" placeholder="Locator (ex. JN18)">
-    <input type="text" name="operatorDepartment" placeholder="Département">
+    <input type="text" name="operatorCall" placeholder="Indicatif (ex. F4IXH)" required>
+    <input type="text" name="operatorLocator" placeholder="Locator (ex. JN23rl)">
+    <input type="text" name="operatorDepartment" placeholder="Département (ex. 13)">
     <button type="button" class="btn-danger remove-operator">Retirer</button>
   `;
   row.querySelector('[name="operatorCall"]').value = call;

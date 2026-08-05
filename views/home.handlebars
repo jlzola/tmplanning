@@ -1,7 +1,14 @@
 <section class="hero">
   <h1>{{appName}}</h1>
-  <p>Choisissez une session TM Planning en cours, ou créez-en une nouvelle.</p>
-  <a class="btn" href="/sessions/new">+ Nouvelle session</a>
+  <p class="pitch">
+    L'outil des radioamateurs pour coordonner leurs bandes en direct : chaque
+    opérateur déclare la bande et le mode qu'il utilise pendant une session
+    TM.
+  </p>
+  <div class="hero-actions">
+    <a class="btn" href="/sessions/new">+ Nouvelle session</a>
+    <a class="btn-secondary" href="/about">En savoir plus</a>
+  </div>
 </section>
 
 <section>
@@ -14,8 +21,16 @@
         <h3>{{this.name}}</h3>
         <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
       </div>
-      <p>{{this.startDate}} → {{this.endDate}}</p>
-      <p>{{this.operators.length}} opérateur(s)</p>
+      <p class="session-dates">
+        {{formatDate this.startDate}} → {{formatDate this.endDate}}
+        <span class="date-info">· {{this.dateInfo}}</span>
+      </p>
+      <div class="session-card-footer">
+        <span>{{this.operators.length}} opérateur(s)</span>
+        <span class="chip {{#if this.occupiedCount}}chip-busy{{else}}chip-free{{/if}}">
+          {{this.occupiedCount}}/{{this.totalSlots}} slots occupées
+        </span>
+      </div>
     </a>
     {{/each}}
   </div>

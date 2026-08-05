@@ -19,6 +19,33 @@ function computeStatus(session, now) {
   return 'ongoing';
 }
 
+const ONE_DAY = 24 * 60 * 60 * 1000;
+
+function daysBetween(fromDateStr, toDateStr) {
+  return Math.round((new Date(toDateStr) - new Date(fromDateStr)) / ONE_DAY);
+}
+
+function describeDates(session, now, status) {
+  if (session.closedAt) {
+    return session.closedAt.slice(0, 10) === now ? 'Clôturée aujourd’hui' : 'Clôturée manuellement';
+  }
+
+  if (status === 'upcoming') {
+    const days = daysBetween(now, session.startDate);
+    return days <= 1 ? 'Débute demain' : `Débute dans ${days} jours`;
+  }
+
+  if (status === 'ended') {
+    const days = daysBetween(session.endDate, now);
+    return days <= 1 ? 'Terminée hier' : `Terminée depuis ${days} jours`;
+  }
+
+  const daysLeft = daysBetween(now, session.endDate);
+  if (daysLeft <= 0) return 'Dernier jour';
+  if (daysLeft === 1) return 'Se termine demain';
+  return `${daysLeft} jours restants`;
+}
+
 const STATUS_ORDER = { ongoing: 0, upcoming: 1, ended: 2 };
 
 function normalizeOperators(operators) {
@@ -47,14 +74,19 @@ export async function listSessions() {
   const now = today();
 
   return sessions
-    .map((s) => ({ ...s, status: computeStatus(s, now) }))
+    .map((s) => {
+      const status = computeStatus(s, now);
+      return { ...s, status, dateInfo: describeDates(s, now, status) };
+    })
     .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || a.startDate.localeCompare(b.startDate));
 }
 
 export async function getSession(id) {
   const session = await getSessionById(id);
   if (!session) return null;
-  return { ...session, status: computeStatus(session, today()) };
+  const now = today();
+  const status = computeStatus(session, now);
+  return { ...session, status, dateInfo: describeDates(session, now, status) };
 }
 
 export async function createSession({ name, startDate, endDate, operators }) {

@@ -12,11 +12,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const STATUS_LABELS = { ongoing: 'En cours', upcoming: 'À venir', ended: 'Terminée' };
+const DATE_FORMATTER = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
 app.engine('handlebars', engine({
   helpers: {
     eq: (a, b) => a === b,
-    statusLabel: (status) => STATUS_LABELS[status] ?? status
+    statusLabel: (status) => STATUS_LABELS[status] ?? status,
+    formatDate: (dateStr) => (dateStr ? DATE_FORMATTER.format(new Date(dateStr)) : '')
   }
 }));
 app.set('view engine', 'handlebars');

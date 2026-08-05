@@ -1,110 +1,113 @@
 <section>
   <p><a href="/">← Toutes les sessions</a></p>
-  <div class="session-header">
-    <h1>{{session.name}}</h1>
-    <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
-  </div>
-  <p>{{session.startDate}} → {{session.endDate}}</p>
 
-  <div class="session-actions">
-    <a href="/sessions/{{session.id}}/edit" class="btn-secondary">Gérer la session</a>
-    {{#if session.closedAt}}
-    <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form" data-confirm="Réouvrir cette session ?">
-      <button type="submit" class="btn-secondary">Réouvrir la session</button>
-    </form>
-    {{else}}
-    {{#unless (eq session.status 'ended')}}
-    <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée.">
-      <button type="submit" class="btn-danger">Clôturer la session</button>
-    </form>
-    {{/unless}}
-    {{/if}}
+  <div class="session-header">
+    <div>
+      <div class="session-title-row">
+        <h1>{{session.name}}</h1>
+        <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+      </div>
+      <p class="session-dates">
+        {{formatDate session.startDate}} → {{formatDate session.endDate}}
+        <span class="date-info">· {{session.dateInfo}}</span>
+      </p>
+    </div>
+    <div class="session-actions">
+      <a href="/sessions/{{session.id}}/edit" class="btn-icon" title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>
+    </div>
   </div>
 
   {{#if error}}
   <p class="error">{{error}}</p>
   {{/if}}
 
-  <h2>Enregistrer votre activité <small>(Fréquence non obligatoire)</small></h2>
-  <form class="reserve-form" method="POST" action="/sessions/{{session.id}}/reserve">
-    <label>
-      Bande
-      <select name="band" required>
+  <form class="reserve-toolbar" method="POST" action="/sessions/{{session.id}}/reserve">
+    <div class="field">
+      <label for="reserve-band">Bande</label>
+      <select id="reserve-band" name="band" required>
         {{#each bands}}
         <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
-    </label>
+    </div>
 
-    <label>
-      Mode
-      <select name="mode" required>
+    <div class="field">
+      <label for="reserve-mode">Mode</label>
+      <select id="reserve-mode" name="mode" required>
         {{#each modes}}
         <option value="{{this}}">{{this}}</option>
         {{/each}}
       </select>
-    </label>
+    </div>
 
-    <label>
-      Opérateur
-      <select name="operatorCall" required>
+    <div class="field">
+      <label for="reserve-operator">Opérateur</label>
+      <select id="reserve-operator" name="operatorCall" required>
         {{#each session.operators}}
         <option value="{{this.call}}">{{this.call}}</option>
         {{/each}}
       </select>
-    </label>
+    </div>
 
-    <label>
-      Fréquence (kHz)
-      <input type="number" name="frequency" step="0.1" placeholder="ex. 14250">
-    </label>
+    <div class="field field-freq">
+      <label for="reserve-frequency">Fréquence (kHz)</label>
+      <input id="reserve-frequency" type="number" name="frequency" step="0.1" placeholder="optionnel">
+    </div>
 
-    <button type="submit" class="btn">QRV — Prendre la bande</button>
+    <button type="submit" class="btn">QRV — Prendre</button>
   </form>
 
-  <h2>
-    État des bandes
-    <button id="refresh-btn" class="btn-secondary" type="button">Refresh</button>
-  </h2>
+  <div class="grid-panel">
+    <div class="grid-toolbar">
+      <h2>État des bandes</h2>
+      <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Refresh</button>
+    </div>
 
-  <table class="grid-table" id="grid-table" data-session-id="{{session.id}}">
-    <thead>
-      <tr>
-        <th>Bande</th>
-        <th>Mode</th>
-        <th>État</th>
-        <th>Opérateur</th>
-        <th>Locator</th>
-        <th>Département</th>
-        <th>Fréquence</th>
-        <th>QRV depuis</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each grid}}
-      <tr class="{{#if this.free}}free{{else}}busy{{/if}}">
-        <td>{{this.band}}</td>
-        <td>{{this.mode}}</td>
-        <td>{{#if this.free}}Libre{{else}}Occupée{{/if}}</td>
-        <td>{{this.operator}}</td>
-        <td>{{this.locator}}</td>
-        <td>{{this.department}}</td>
-        <td>{{this.frequency}}</td>
-        <td>{{this.qrvSince}}</td>
-        <td>
-          {{#unless this.free}}
-          <form method="POST" action="/sessions/{{../session.id}}/release">
-            <input type="hidden" name="band" value="{{this.band}}">
-            <input type="hidden" name="mode" value="{{this.mode}}">
-            <button type="submit" class="btn-danger">QRT — Libérer</button>
-          </form>
-          {{/unless}}
-        </td>
-      </tr>
-      {{/each}}
-    </tbody>
-  </table>
+    <div class="table-scroll">
+      <table class="grid-table" id="grid-table" data-session-id="{{session.id}}">
+        <thead>
+          <tr>
+            <th>Bande</th>
+            <th>Mode</th>
+            <th>État</th>
+            <th>Opérateur</th>
+            <th>Locator</th>
+            <th>Département</th>
+            <th>Fréquence</th>
+            <th>QRV depuis</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each grid}}
+          <tr class="{{#if this.free}}free{{else}}busy{{/if}}">
+            <td class="col-band">{{this.band}}</td>
+            <td class="col-mode">{{this.mode}}</td>
+            <td>
+              <span class="chip chip-{{#if this.free}}free{{else}}busy{{/if}}">
+                {{#if this.free}}Libre{{else}}Occupée{{/if}}
+              </span>
+            </td>
+            <td>{{this.operator}}</td>
+            <td>{{this.locator}}</td>
+            <td>{{this.department}}</td>
+            <td>{{this.frequency}}</td>
+            <td>{{this.qrvSince}}</td>
+            <td>
+              {{#unless this.free}}
+              <form method="POST" action="/sessions/{{../session.id}}/release">
+                <input type="hidden" name="band" value="{{this.band}}">
+                <input type="hidden" name="mode" value="{{this.mode}}">
+                <button type="submit" class="btn-danger btn-small">QRT</button>
+              </form>
+              {{/unless}}
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </section>
 
 <script src="/js/refresh.js"></script>

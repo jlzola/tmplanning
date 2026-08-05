@@ -1,15 +1,37 @@
 <section>
   <p><a href="/sessions/{{session.id}}">← Retour à la session</a></p>
-  <h1>Modifier {{session.name}}</h1>
+
+  <div class="session-header">
+    <div>
+      <div class="session-title-row">
+        <h1>Gérer {{session.name}}</h1>
+        <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+      </div>
+      <p class="session-dates">
+        {{formatDate session.startDate}} → {{formatDate session.endDate}}
+        <span class="date-info">· {{session.dateInfo}}</span>
+      </p>
+    </div>
+    <div class="session-actions">
+      <a href="/sessions/{{session.id}}/export.json" class="btn-icon" title="Exporter la session (JSON)">⬇ JSON</a>
+      <a href="/sessions/{{session.id}}/operators.csv" class="btn-icon" title="Exporter les opérateurs (CSV)">⬇ CSV</a>
+      {{#if session.closedAt}}
+      <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form" data-confirm="Réouvrir cette session ?">
+        <button type="submit" class="btn-icon">↺ Réouvrir</button>
+      </form>
+      {{else}}
+      {{#unless (eq session.status 'ended')}}
+      <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée.">
+        <button type="submit" class="btn-icon btn-icon-danger">⏹ Clôturer</button>
+      </form>
+      {{/unless}}
+      {{/if}}
+    </div>
+  </div>
 
   {{#if error}}
   <p class="error">{{error}}</p>
   {{/if}}
-
-  <div class="export-links">
-    <a href="/sessions/{{session.id}}/export.json" class="btn-secondary">⬇ Exporter la session (JSON)</a>
-    <a href="/sessions/{{session.id}}/operators.csv" class="btn-secondary">⬇ Exporter les opérateurs (CSV)</a>
-  </div>
 
   <form method="POST" action="/sessions/{{session.id}}/edit" class="session-form">
     <label>

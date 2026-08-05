@@ -12,7 +12,7 @@ async function refreshGrid() {
     const row = rows[i];
     if (!row) return;
     row.className = item.free ? 'free' : 'busy';
-    row.cells[2].textContent = item.free ? 'Libre' : 'Occupée';
+    row.cells[2].innerHTML = `<span class="chip chip-${item.free ? 'free' : 'busy'}">${item.free ? 'Libre' : 'Occupée'}</span>`;
     row.cells[3].textContent = item.operator ?? '';
     row.cells[4].textContent = item.locator ?? '';
     row.cells[5].textContent = item.department ?? '';
@@ -28,7 +28,7 @@ async function refreshGrid() {
       form.innerHTML = `
         <input type="hidden" name="band" value="${item.band}">
         <input type="hidden" name="mode" value="${item.mode}">
-        <button type="submit" class="btn-danger">QRT — Libérer</button>
+        <button type="submit" class="btn-danger btn-small">QRT</button>
       `;
       actionCell.appendChild(form);
     }

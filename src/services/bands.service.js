@@ -2,6 +2,13 @@ import { BANDS, MODES } from '../config/constants.js';
 import { getSession } from './sessions.service.js';
 import { getActivityForSession, findActive, addEntry, releaseEntry } from '../data/activity.store.js';
 
+export const TOTAL_SLOTS = BANDS.length * MODES.length;
+
+export async function countOccupied(sessionId) {
+  const activity = await getActivityForSession(sessionId);
+  return activity.filter((e) => !e.qrt).length;
+}
+
 export async function listGrid(sessionId) {
   const activity = await getActivityForSession(sessionId);
 
