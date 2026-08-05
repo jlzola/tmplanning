@@ -1,0 +1,25 @@
+<section class="hero">
+  <h1>{{appName}}</h1>
+  <p>Choisissez une session TM Planning en cours, ou créez-en une nouvelle.</p>
+  <a class="btn" href="/sessions/new">+ Nouvelle session</a>
+</section>
+
+<section>
+  <h2>Sessions</h2>
+  {{#if sessions.length}}
+  <div class="session-list">
+    {{#each sessions}}
+    <a class="session-card status-{{this.status}}" href="/sessions/{{this.id}}">
+      <div class="session-card-header">
+        <h3>{{this.name}}</h3>
+        <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
+      </div>
+      <p>{{this.startDate}} → {{this.endDate}}</p>
+      <p>{{this.operators.length}} opérateur(s)</p>
+    </a>
+    {{/each}}
+  </div>
+  {{else}}
+  <p>Aucune session pour le moment. <a href="/sessions/new">Créez la première session</a>.</p>
+  {{/if}}
+</section>

@@ -1,0 +1,30 @@
+<table class="activity-table">
+  <thead>
+    <tr>
+      <th>Bande</th>
+      <th>Mode</th>
+      <th>Opérateur</th>
+      <th>Locator</th>
+      <th>Département</th>
+      <th>Fréquence</th>
+      <th>QRV depuis</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each active}}
+    <tr>
+      <td>{{this.band}}</td>
+      <td>{{this.mode}}</td>
+      <td>{{this.operator}}</td>
+      <td>{{this.locator}}</td>
+      <td>{{this.department}}</td>
+      <td>{{this.frequency}}</td>
+      <td>{{this.qrvSince}}</td>
+    </tr>
+    {{else}}
+    <tr>
+      <td colspan="7">Aucune activité en cours.</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

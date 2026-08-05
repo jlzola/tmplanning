@@ -1,0 +1,110 @@
+<section>
+  <p><a href="/">← Toutes les sessions</a></p>
+  <div class="session-header">
+    <h1>{{session.name}}</h1>
+    <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+  </div>
+  <p>{{session.startDate}} → {{session.endDate}}</p>
+
+  <div class="session-actions">
+    <a href="/sessions/{{session.id}}/edit" class="btn-secondary">Gérer la session</a>
+    {{#if session.closedAt}}
+    <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form" data-confirm="Réouvrir cette session ?">
+      <button type="submit" class="btn-secondary">Réouvrir la session</button>
+    </form>
+    {{else}}
+    {{#unless (eq session.status 'ended')}}
+    <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée.">
+      <button type="submit" class="btn-danger">Clôturer la session</button>
+    </form>
+    {{/unless}}
+    {{/if}}
+  </div>
+
+  {{#if error}}
+  <p class="error">{{error}}</p>
+  {{/if}}
+
+  <h2>Enregistrer votre activité <small>(Fréquence non obligatoire)</small></h2>
+  <form class="reserve-form" method="POST" action="/sessions/{{session.id}}/reserve">
+    <label>
+      Bande
+      <select name="band" required>
+        {{#each bands}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </label>
+
+    <label>
+      Mode
+      <select name="mode" required>
+        {{#each modes}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+      </select>
+    </label>
+
+    <label>
+      Opérateur
+      <select name="operatorCall" required>
+        {{#each session.operators}}
+        <option value="{{this.call}}">{{this.call}}</option>
+        {{/each}}
+      </select>
+    </label>
+
+    <label>
+      Fréquence (kHz)
+      <input type="number" name="frequency" step="0.1" placeholder="ex. 14250">
+    </label>
+
+    <button type="submit" class="btn">QRV — Prendre la bande</button>
+  </form>
+
+  <h2>
+    État des bandes
+    <button id="refresh-btn" class="btn-secondary" type="button">Refresh</button>
+  </h2>
+
+  <table class="grid-table" id="grid-table" data-session-id="{{session.id}}">
+    <thead>
+      <tr>
+        <th>Bande</th>
+        <th>Mode</th>
+        <th>État</th>
+        <th>Opérateur</th>
+        <th>Locator</th>
+        <th>Département</th>
+        <th>Fréquence</th>
+        <th>QRV depuis</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each grid}}
+      <tr class="{{#if this.free}}free{{else}}busy{{/if}}">
+        <td>{{this.band}}</td>
+        <td>{{this.mode}}</td>
+        <td>{{#if this.free}}Libre{{else}}Occupée{{/if}}</td>
+        <td>{{this.operator}}</td>
+        <td>{{this.locator}}</td>
+        <td>{{this.department}}</td>
+        <td>{{this.frequency}}</td>
+        <td>{{this.qrvSince}}</td>
+        <td>
+          {{#unless this.free}}
+          <form method="POST" action="/sessions/{{../session.id}}/release">
+            <input type="hidden" name="band" value="{{this.band}}">
+            <input type="hidden" name="mode" value="{{this.mode}}">
+            <button type="submit" class="btn-danger">QRT — Libérer</button>
+          </form>
+          {{/unless}}
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+</section>
+
+<script src="/js/refresh.js"></script>

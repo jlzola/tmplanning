@@ -1,0 +1,53 @@
+<section>
+  <p><a href="/sessions/{{session.id}}">← Retour à la session</a></p>
+  <h1>Modifier {{session.name}}</h1>
+
+  {{#if error}}
+  <p class="error">{{error}}</p>
+  {{/if}}
+
+  <div class="export-links">
+    <a href="/sessions/{{session.id}}/export.json" class="btn-secondary">⬇ Exporter la session (JSON)</a>
+    <a href="/sessions/{{session.id}}/operators.csv" class="btn-secondary">⬇ Exporter les opérateurs (CSV)</a>
+  </div>
+
+  <form method="POST" action="/sessions/{{session.id}}/edit" class="session-form">
+    <label>
+      Nom de la session
+      <input type="text" name="name" required value="{{values.name}}">
+    </label>
+
+    <div class="date-row">
+      <label>
+        Date de début
+        <input type="date" name="startDate" required value="{{values.startDate}}">
+      </label>
+      <label>
+        Date de fin
+        <input type="date" name="endDate" required value="{{values.endDate}}">
+      </label>
+    </div>
+
+    <h2>Opérateurs</h2>
+    <label class="file-import">
+      Importer des opérateurs (CSV : call,locator,department)
+      <input type="file" id="csv-import" accept=".csv,text/csv">
+    </label>
+
+    {{> operator-rows}}
+    <button type="button" id="add-operator" class="btn-secondary">+ Ajouter un opérateur</button>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Enregistrer les modifications</button>
+    </div>
+  </form>
+
+  <div class="danger-zone">
+    <h2>Zone de danger</h2>
+    <form method="POST" action="/sessions/{{session.id}}/delete" class="inline-form" data-confirm="Supprimer définitivement cette session et son activité ?">
+      <button type="submit" class="btn-danger">Supprimer la session</button>
+    </form>
+  </div>
+</section>
+
+<script src="/js/session-form.js"></script>

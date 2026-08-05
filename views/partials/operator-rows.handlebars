@@ -1,0 +1,19 @@
+<div id="operator-rows">
+  {{#if values.operators.length}}
+  {{#each values.operators}}
+  <div class="operator-row">
+    <input type="text" name="operatorCall" placeholder="Indicatif (ex. F2DX)" required value="{{this.call}}">
+    <input type="text" name="operatorLocator" placeholder="Locator (ex. JN18)" value="{{this.locator}}">
+    <input type="text" name="operatorDepartment" placeholder="Département" value="{{this.department}}">
+    <button type="button" class="btn-danger remove-operator">Retirer</button>
+  </div>
+  {{/each}}
+  {{else}}
+  <div class="operator-row">
+    <input type="text" name="operatorCall" placeholder="Indicatif (ex. F2DX)" required>
+    <input type="text" name="operatorLocator" placeholder="Locator (ex. JN18)">
+    <input type="text" name="operatorDepartment" placeholder="Département">
+    <button type="button" class="btn-danger remove-operator">Retirer</button>
+  </div>
+  {{/if}}
+</div>

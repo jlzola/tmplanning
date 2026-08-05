@@ -1,0 +1,46 @@
+<section>
+  <p><a href="/">← Toutes les sessions</a></p>
+  <h1>Nouvelle session TM Planning</h1>
+
+  {{#if error}}
+  <p class="error">{{error}}</p>
+  {{/if}}
+
+  <label class="file-import">
+    Charger une session depuis un fichier JSON (pré-remplit le formulaire)
+    <input type="file" id="json-import" accept=".json,application/json">
+  </label>
+
+  <form method="POST" action="/sessions" class="session-form">
+    <label>
+      Nom de la session
+      <input type="text" name="name" required value="{{values.name}}" placeholder="ex. TM47CDXC">
+    </label>
+
+    <div class="date-row">
+      <label>
+        Date de début
+        <input type="date" name="startDate" required value="{{values.startDate}}">
+      </label>
+      <label>
+        Date de fin
+        <input type="date" name="endDate" required value="{{values.endDate}}">
+      </label>
+    </div>
+
+    <h2>Opérateurs</h2>
+    <label class="file-import">
+      Importer des opérateurs (CSV : call,locator,department)
+      <input type="file" id="csv-import" accept=".csv,text/csv">
+    </label>
+
+    {{> operator-rows}}
+    <button type="button" id="add-operator" class="btn-secondary">+ Ajouter un opérateur</button>
+
+    <div class="form-actions">
+      <button type="submit" class="btn">Créer la session</button>
+    </div>
+  </form>
+</section>
+
+<script src="/js/session-form.js"></script>
