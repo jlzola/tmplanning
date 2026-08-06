@@ -4,8 +4,6 @@ Application web pour les radioamateurs permettant de déclarer en direct
 qu'un opérateur émet sur une bande et un mode donnés, le temps d'une
 session TM (activité spéciale, contest, événement).
 
-Inspirée de [TM47CDXC Operation Planning](https://tm47cdxc.jelobox.fr/).
-
 ## Fonctionnalités
 
 - Création de sessions TM Planning (nom, dates, liste d'opérateurs)
@@ -37,9 +35,42 @@ Pour le développement (rechargement automatique) :
 npm run dev
 ```
 
+## Déploiement (production)
+
+```bash
+git clone https://github.com/jlzola/tmplanning.git
+cd tmplanning
+npm install --omit=dev
+cp .env.example .env   # éditer PORT / APP_NAME si besoin
+
+npm install -g pm2
+pm2 start ecosystem.config.cjs
+pm2 save
+pm2 startup            # exécuter la commande affichée pour le démarrage auto au boot
+```
+
+Reverse proxy + HTTPS : voir l'exemple de vhost nginx dans
+[`deploy/nginx-tmplanning.conf`](deploy/nginx-tmplanning.conf), puis :
+
+```bash
+certbot --nginx -d tmplanning.jelobox.fr
+```
+
+Les données (`src/data/sessions.json`, `activity.json`) sont créées
+automatiquement au premier lancement — pensez à les sauvegarder
+régulièrement, il n'y a pas de base de données.
+
+Mise à jour :
+
+```bash
+git pull
+npm install --omit=dev
+pm2 restart tmplanning
+```
+
 ## Auteur
 
-Jean-Louis Zola, **F4IXH** ([voir sur QRZ.com](https://www.qrz.com/db/F4IXH))
+Jean-Louis Zola,  ([**F4IXH**](https://www.qrz.com/db/F4IXH))
 
 Application gratuite pour la communauté des radioamateurs, sans contrôle ni
 modération — c'est l'esprit radioamateur. Si elle te rend service, un petit
