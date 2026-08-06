@@ -4,3 +4,5 @@ export const BANDS = [
 ];
 
 export const MODES = ['CW', 'SSB', 'DIGI'];
+
+export const APP_VERSION = '1.0.0';

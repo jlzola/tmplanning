@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 
 import routes from './src/routes/index.js';
 import { errorHandler, notFoundHandler } from './src/middlewares/errorHandler.js';
+import { APP_VERSION } from './src/config/constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -30,6 +31,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   res.locals.appName = process.env.APP_NAME || 'TM Planning';
+  res.locals.appVersion = APP_VERSION;
   next();
 });
 
