@@ -20,13 +20,20 @@
       {{/if}}
     </div>
     <div class="session-actions">
-      <a href="/sessions/{{session.id}}/edit" class="btn-icon" title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>
+      <a href="/sessions/{{session.id}}/edit" class="btn-icon"
+        title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>
     </div>
   </div>
 
   {{#if error}}
   <p class="error">{{error}}</p>
   {{/if}}
+
+  <div class="band-chart-panel">
+    <h2>Utilisation des bandes</h2>
+    <img src="/sessions/{{session.id}}/bands.svg"
+      alt="Répartition des bandes occupées par les opérateurs, de QO-100 à 160m" class="band-chart" id="band-chart">
+  </div>
 
   <form class="reserve-toolbar" method="POST" action="/sessions/{{session.id}}/reserve">
     <div class="field">

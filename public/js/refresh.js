@@ -1,12 +1,18 @@
 const refreshBtn = document.getElementById('refresh-btn');
 const table = document.getElementById('grid-table');
+const bandChart = document.getElementById('band-chart');
 const sessionId = table?.dataset.sessionId;
+
+function refreshBandChart() {
+  if (bandChart) bandChart.src = `/sessions/${sessionId}/bands.svg?t=${Date.now()}`;
+}
 
 async function refreshGrid() {
   const res = await fetch(`/api/sessions/${sessionId}/bands`);
   if (!res.ok) return;
   const grid = await res.json();
   const rows = table.tBodies[0].rows;
+  refreshBandChart();
 
   grid.forEach((item, i) => {
     const row = rows[i];

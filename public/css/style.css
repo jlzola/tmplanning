@@ -102,12 +102,13 @@ textarea:focus {
 
 .eyebrow {
   display: inline-block;
-  padding: 0.3rem 0.85rem;
+  padding: 0.85rem;
   border-radius: 999px;
   background: #eaf3fd;
   color: var(--primary);
   font-size: 1.8rem;
   font-weight: 600;
+  margin-bottom: 1.6rem;;
 }
 
 .pitch {
@@ -116,6 +117,7 @@ textarea:focus {
   color: #444;
   line-height: 1.5;
   font-size: 1.2rem;
+  margin-bottom: 3rem;;
 }
 
 .hero-actions {
@@ -207,6 +209,20 @@ textarea:focus {
 .reserve-toolbar .field-freq input { width: 8rem; min-width: 0; }
 
 .reserve-toolbar .btn { padding: 0.45rem 1rem; white-space: nowrap; }
+
+/* Graphique de répartition des bandes (image SVG générée côté serveur) */
+.band-chart-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 1rem 1rem 0.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.band-chart-panel h2 { margin: 0 0 0.5rem; font-size: 1.15rem; }
+
+.band-chart { display: block; width: 100%; height: auto; }
 
 /* Grille des bandes : élément central de la page */
 .grid-panel {

@@ -9,6 +9,7 @@ import {
 } from '../services/sessions.service.js';
 import { listGrid, reserveBand, releaseBand } from '../services/bands.service.js';
 import { slugify, operatorsToCsv } from '../utils/format.js';
+import { renderBandChartSvg } from '../utils/bandChart.js';
 
 function toArray(value) {
   if (value === undefined) return [];
@@ -182,6 +183,22 @@ export async function apiGrid(req, res, next) {
   try {
     const grid = await listGrid(req.params.id);
     res.json(grid);
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function bandChartSvg(req, res, next) {
+  try {
+    const session = await getSession(req.params.id);
+    if (!session) return notFound(res);
+
+    const grid = await listGrid(session.id);
+    const svg = renderBandChartSvg({ grid, bands: BANDS, modes: MODES });
+
+    res.setHeader('Content-Type', 'image/svg+xml');
+    res.setHeader('Cache-Control', 'no-store');
+    res.send(svg);
   } catch (err) {
     next(err);
   }

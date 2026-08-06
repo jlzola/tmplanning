@@ -11,6 +11,7 @@ import {
   exportJson,
   exportOperatorsCsv,
   apiGrid,
+  bandChartSvg,
   reserve,
   release
 } from '../controllers/sessions.controller.js';
@@ -28,6 +29,7 @@ router.post('/sessions/:id/delete', remove);
 router.get('/sessions/:id/export.json', exportJson);
 router.get('/sessions/:id/operators.csv', exportOperatorsCsv);
 router.get('/api/sessions/:id/bands', apiGrid);
+router.get('/sessions/:id/bands.svg', bandChartSvg);
 router.post('/sessions/:id/reserve', reserve);
 router.post('/sessions/:id/release', release);
 
