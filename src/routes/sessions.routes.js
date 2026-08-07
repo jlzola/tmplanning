@@ -13,7 +13,9 @@ import {
   apiGrid,
   bandChartSvg,
   reserve,
-  release
+  release,
+  requireUnlocked,
+  verifyPassword
 } from '../controllers/sessions.controller.js';
 
 const router = Router();
@@ -21,11 +23,12 @@ const router = Router();
 router.get('/sessions/new', showNewSessionForm);
 router.post('/sessions', create);
 router.get('/sessions/:id', showSession);
-router.get('/sessions/:id/edit', showEditSessionForm);
-router.post('/sessions/:id/edit', update);
-router.post('/sessions/:id/close', close);
-router.post('/sessions/:id/reopen', reopen);
-router.post('/sessions/:id/delete', remove);
+router.post('/sessions/:id/verify-password', verifyPassword);
+router.get('/sessions/:id/edit', requireUnlocked, showEditSessionForm);
+router.post('/sessions/:id/edit', requireUnlocked, update);
+router.post('/sessions/:id/close', requireUnlocked, close);
+router.post('/sessions/:id/reopen', requireUnlocked, reopen);
+router.post('/sessions/:id/delete', requireUnlocked, remove);
 router.get('/sessions/:id/export.json', exportJson);
 router.get('/sessions/:id/operators.csv', exportOperatorsCsv);
 router.get('/api/sessions/:id/bands', apiGrid);

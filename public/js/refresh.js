@@ -27,14 +27,22 @@ async function refreshGrid() {
 
     const actionCell = row.cells[8];
     actionCell.innerHTML = '';
-    if (!item.free) {
+    if (item.free) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn-secondary btn-small row-action-btn row-reserve-btn';
+      btn.dataset.band = item.band;
+      btn.dataset.mode = item.mode;
+      btn.textContent = 'Réserver';
+      actionCell.appendChild(btn);
+    } else {
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = `/sessions/${sessionId}/release`;
       form.innerHTML = `
         <input type="hidden" name="band" value="${item.band}">
         <input type="hidden" name="mode" value="${item.mode}">
-        <button type="submit" class="btn-danger btn-small">QRT</button>
+        <button type="submit" class="btn-danger btn-small row-action-btn">QRT</button>
       `;
       actionCell.appendChild(form);
     }

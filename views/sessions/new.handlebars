@@ -39,6 +39,20 @@
       </label>
     </div>
 
+    <label>
+      Mot de passe de gestion (optionnel)
+      {{#> password-field}}
+      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}"
+        autocomplete="new-password"
+        title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
+        placeholder="Laisser vide pour ne pas protéger la session">
+      {{/password-field}}
+    </label>
+    <p class="field-hint">
+      Si renseigné, ce mot de passe sera demandé pour accéder à la gestion de la session (⚙ Gérer).
+      8 caractères minimum, lettres et chiffres uniquement, pas de caractères spéciaux.
+    </p>
+
     <h2>Opérateurs</h2>
     <label class="file-import">
       Importer des opérateurs (CSV : call,locator,department)
@@ -55,3 +69,4 @@
 </section>
 
 <script src="/js/session-form.js"></script>
+<script src="/js/password-toggle.js"></script>

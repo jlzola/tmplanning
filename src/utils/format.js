@@ -16,6 +16,21 @@ function escapeCsvField(value) {
   return str;
 }
 
+export function formatFrequency(frequency) {
+  if (frequency === undefined || frequency === null) return null;
+
+  const trimmed = String(frequency).trim();
+  if (!trimmed) return null;
+
+  if (Number.isNaN(Number(trimmed))) {
+    throw new Error('Fréquence invalide');
+  }
+
+  const [intPart, decPart = ''] = trimmed.split('.');
+  const decimals = decPart.length < 2 ? decPart.padEnd(2, '0') : decPart;
+  return `${intPart}.${decimals}`;
+}
+
 export function operatorsToCsv(operators) {
   const header = 'call,locator,department';
   const rows = operators.map((o) =>

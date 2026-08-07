@@ -1,6 +1,7 @@
 import { BANDS, MODES } from '../config/constants.js';
 import { getSession } from './sessions.service.js';
 import { getActivityForSession, findActive, addEntry, releaseEntry } from '../data/activity.store.js';
+import { formatFrequency } from '../utils/format.js';
 
 export const TOTAL_SLOTS = BANDS.length * MODES.length;
 
@@ -49,7 +50,7 @@ export async function reserveBand(sessionId, { band, mode, operatorCall, frequen
     operator: operator.call,
     locator: operator.locator,
     department: operator.department,
-    frequency: frequency ? Number(frequency) : null,
+    frequency: formatFrequency(frequency),
     qrvSince: new Date().toISOString(),
     qrt: null
   });

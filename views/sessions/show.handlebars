@@ -20,7 +20,9 @@
       {{/if}}
     </div>
     <div class="session-actions">
-      <a href="/sessions/{{session.id}}/edit" class="btn-icon"
+      <a href="/sessions/{{session.id}}/edit" class="btn-secondary btn-small" id="manage-link"
+        data-session-id="{{session.id}}"
+        data-locked="{{#if session.passwordHash}}true{{else}}false{{/if}}"
         title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>
     </div>
   </div>
@@ -29,52 +31,82 @@
   <p class="error">{{error}}</p>
   {{/if}}
 
+  <dialog id="password-dialog" class="password-dialog">
+    <form id="password-form">
+      <h2>Mot de passe requis</h2>
+      <p>Cette session est protégée. Saisissez le mot de passe de gestion pour continuer.</p>
+      <label>
+        Mot de passe
+        {{#> password-field}}
+        <input type="password" id="password-input" name="password" required autocomplete="off">
+        {{/password-field}}
+      </label>
+      <p class="error" id="password-error" hidden></p>
+      <div class="form-actions">
+        <button type="button" id="password-cancel" class="btn-secondary">Annuler</button>
+        <button type="submit" class="btn">Valider</button>
+      </div>
+    </form>
+  </dialog>
+
   <div class="band-chart-panel">
     <h2>Utilisation des bandes</h2>
     <img src="/sessions/{{session.id}}/bands.svg"
       alt="Répartition des bandes occupées par les opérateurs, de QO-100 à 160m" class="band-chart" id="band-chart">
   </div>
 
-  <form class="reserve-toolbar" method="POST" action="/sessions/{{session.id}}/reserve">
-    <div class="field">
-      <label for="reserve-band">Bande</label>
-      <select id="reserve-band" name="band" required>
-        {{#each bands}}
-        <option value="{{this}}">{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+  <dialog id="reserve-dialog" class="reserve-dialog">
+    <form method="POST" action="/sessions/{{session.id}}/reserve" id="reserve-form">
+      <h2>Réserver un créneau</h2>
 
-    <div class="field">
-      <label for="reserve-mode">Mode</label>
-      <select id="reserve-mode" name="mode" required>
-        {{#each modes}}
-        <option value="{{this}}">{{this}}</option>
-        {{/each}}
-      </select>
-    </div>
+      <label>
+        Bande
+        <select id="reserve-band" name="band" required>
+          {{#each bands}}
+          <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+      </label>
 
-    <div class="field">
-      <label for="reserve-operator">Opérateur</label>
-      <select id="reserve-operator" name="operatorCall" required>
-        {{#each session.operators}}
-        <option value="{{this.call}}">{{this.call}}</option>
-        {{/each}}
-      </select>
-    </div>
+      <label>
+        Mode
+        <select id="reserve-mode" name="mode" required>
+          {{#each modes}}
+          <option value="{{this}}">{{this}}</option>
+          {{/each}}
+        </select>
+      </label>
 
-    <div class="field field-freq">
-      <label for="reserve-frequency">Fréquence (kHz)</label>
-      <input id="reserve-frequency" type="number" name="frequency" step="0.1" placeholder="optionnel">
-    </div>
+      <label>
+        Opérateur
+        <select id="reserve-operator" name="operatorCall" required>
+          <option value="" selected disabled>Choisir un indicatif</option>
+          {{#each session.operators}}
+          <option value="{{this.call}}">{{this.call}}</option>
+          {{/each}}
+        </select>
+      </label>
 
-    <button type="submit" class="btn">QRV — Prendre</button>
-  </form>
+      <label>
+        Fréquence (kHz)
+        <input id="reserve-frequency" type="number" name="frequency" step="any" min="0"
+          placeholder="ex. 14250.00 (facultatif)">
+      </label>
+
+      <div class="form-actions">
+        <button type="button" id="reserve-cancel" class="btn-secondary">Annuler</button>
+        <button type="submit" class="btn">Réserver</button>
+      </div>
+    </form>
+  </dialog>
 
   <div class="grid-panel">
     <div class="grid-toolbar">
       <h2>État des bandes</h2>
-      <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Refresh</button>
+      <div class="grid-toolbar-actions">
+        <button id="reserve-open-btn" class="btn btn-small" type="button">+ Réserver</button>
+        <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Refresh</button>
+      </div>
     </div>
 
     <div class="table-scroll">
@@ -108,13 +140,16 @@
             <td>{{this.frequency}}</td>
             <td>{{this.qrvSince}}</td>
             <td>
-              {{#unless this.free}}
+              {{#if this.free}}
+              <button type="button" class="btn-secondary btn-small row-action-btn row-reserve-btn"
+                data-band="{{this.band}}" data-mode="{{this.mode}}">Réserver</button>
+              {{else}}
               <form method="POST" action="/sessions/{{../session.id}}/release">
                 <input type="hidden" name="band" value="{{this.band}}">
                 <input type="hidden" name="mode" value="{{this.mode}}">
-                <button type="submit" class="btn-danger btn-small">QRT</button>
+                <button type="submit" class="btn-danger btn-small row-action-btn">QRT</button>
               </form>
-              {{/unless}}
+              {{/if}}
             </td>
           </tr>
           {{/each}}
@@ -125,3 +160,6 @@
 </section>
 
 <script src="/js/refresh.js"></script>
+<script src="/js/session-password.js"></script>
+<script src="/js/password-toggle.js"></script>
+<script src="/js/session-reserve.js"></script>

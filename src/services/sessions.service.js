@@ -7,6 +7,8 @@ import {
   deleteSession
 } from '../data/sessions.store.js';
 import { deleteActivityForSession } from '../data/activity.store.js';
+import { isValidSessionPassword, hashPassword, checkPassword } from '../utils/password.js';
+import { MASTER_PASSWORD_HASH } from '../config/masterPassword.js';
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -78,6 +80,16 @@ function validateSessionInput({ name, startDate, endDate, operators, creatorCall
   };
 }
 
+function validateSessionPassword(password) {
+  if (!password) return undefined;
+  if (!isValidSessionPassword(password)) {
+    throw new Error(
+      'Le mot de passe de gestion doit contenir au moins 8 caractères, uniquement des lettres et des chiffres (pas de caractères spéciaux)'
+    );
+  }
+  return password;
+}
+
 export async function listSessions() {
   const sessions = await getAllSessions();
   const now = today();
@@ -98,10 +110,13 @@ export async function getSession(id) {
   return { ...session, status, dateInfo: describeDates(session, now, status) };
 }
 
-export async function createSession({ name, startDate, endDate, operators, creatorCall, creatorFirstName }) {
+export async function createSession({
+  name, startDate, endDate, operators, creatorCall, creatorFirstName, password
+}) {
   const { operators: cleanOperators, creator } = validateSessionInput({
     name, startDate, endDate, operators, creatorCall, creatorFirstName
   });
+  const cleanPassword = validateSessionPassword(password);
 
   const session = {
     id: randomUUID(),
@@ -110,6 +125,7 @@ export async function createSession({ name, startDate, endDate, operators, creat
     endDate,
     creator,
     operators: cleanOperators,
+    passwordHash: cleanPassword ? hashPassword(cleanPassword) : null,
     closedAt: null,
     createdAt: new Date().toISOString()
   };
@@ -117,21 +133,40 @@ export async function createSession({ name, startDate, endDate, operators, creat
   return addSession(session);
 }
 
-export async function editSession(id, { name, startDate, endDate, operators, creatorCall, creatorFirstName }) {
+export async function editSession(id, {
+  name, startDate, endDate, operators, creatorCall, creatorFirstName, password, removePassword
+}) {
   const { operators: cleanOperators, creator } = validateSessionInput({
     name, startDate, endDate, operators, creatorCall, creatorFirstName
   });
 
-  const updated = await updateSession(id, {
+  const updates = {
     name: name.trim(),
     startDate,
     endDate,
     creator,
     operators: cleanOperators
-  });
+  };
+
+  if (removePassword) {
+    updates.passwordHash = null;
+  } else {
+    const cleanPassword = validateSessionPassword(password);
+    if (cleanPassword) updates.passwordHash = hashPassword(cleanPassword);
+  }
+
+  const updated = await updateSession(id, updates);
   if (!updated) throw new Error('Session inconnue');
 
   return updated;
+}
+
+export async function verifySessionPassword(id, password) {
+  const session = await getSessionById(id);
+  if (!session) throw new Error('Session inconnue');
+  if (checkPassword(password ?? '', MASTER_PASSWORD_HASH)) return true;
+  if (!session.passwordHash) return true;
+  return checkPassword(password ?? '', session.passwordHash);
 }
 
 export async function closeSession(id) {
