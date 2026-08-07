@@ -67,7 +67,7 @@ export function renderBandChartSvg({ grid, bands, modes }) {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${height}" width="100%" height="auto" ` +
     `role="img" aria-label="Répartition des bandes occupées par les opérateurs">` +
-    `<rect x="0" y="0" width="${WIDTH}" height="${height}" fill="#ffffff"/>` +
+    `<rect x="0" y="0" width="${WIDTH}" height="${height}" fill="#eaf3fd"/>` +
     parts.join('') +
     `</svg>`
   );

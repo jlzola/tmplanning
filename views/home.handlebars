@@ -17,18 +17,30 @@
 <section>
   <h2>Sessions</h2>
   {{#if sessions.length}}
+  <div class="session-filters">
+    <input type="search" id="session-search" class="search-input"
+      placeholder="Rechercher : nom de session, indicatif, prénom…" autocomplete="off">
+    <label class="filter-toggle">
+      <input type="checkbox" id="filter-open-only">
+      Sessions en cours uniquement
+    </label>
+  </div>
   <div class="session-list">
     {{#each sessions}}
-    <a class="session-card status-{{this.status}}" href="/sessions/{{this.id}}">
+    <a class="session-card status-{{this.status}}" href="/sessions/{{this.id}}"
+      data-name="{{this.name}}"
+      data-status="{{this.status}}"
+      data-operators="{{this.operatorsSearch}}"
+      data-creator="{{#if this.creator}}{{this.creator.call}} {{this.creator.firstName}}{{/if}}">
       <div class="session-card-watermark" aria-hidden="true"></div>
       <div class="session-card-header">
-        <h3>{{this.name}}</h3>
+        <h3><span data-hl="name">{{this.name}}</span></h3>
         <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
       </div>
       <p class="session-dates">📅 {{formatDate this.startDate}} → {{formatDate this.endDate}}</p>
       <p class="date-info">⏳ {{this.dateInfo}}</p>
       {{#if this.creator}}
-      <p class="session-creator">✍️ créé par {{this.creator.call}} {{this.creator.firstName}}</p>
+      <p class="session-creator">✍️ créé par <span data-hl="creator">{{this.creator.call}} {{this.creator.firstName}}</span></p>
       {{/if}}
       <div class="session-card-footer">
         <span>👥 {{this.operators.length}} opérateur(s)</span>
@@ -39,7 +51,10 @@
     </a>
     {{/each}}
   </div>
+  <p id="no-results-message" class="no-results" hidden>Aucune session ne correspond à votre recherche.</p>
   {{else}}
   <p>Aucune session pour le moment. <a href="/sessions/new">Créez la première session</a>.</p>
   {{/if}}
 </section>
+
+<script src="/js/session-search.js"></script>

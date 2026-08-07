@@ -8,7 +8,8 @@ export async function showHome(req, res, next) {
       sessions.map(async (session) => ({
         ...session,
         occupiedCount: await countOccupied(session.id),
-        totalSlots: TOTAL_SLOTS
+        totalSlots: TOTAL_SLOTS,
+        operatorsSearch: session.operators.map((o) => o.call).join(' ')
       }))
     );
     res.render('home', { title: 'Accueil', sessions: withOccupancy });

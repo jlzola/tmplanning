@@ -32,6 +32,7 @@ input[type="email"],
 input[type="number"],
 input[type="date"],
 input[type="password"],
+input[type="search"],
 select,
 textarea {
   font-family: inherit;
@@ -48,6 +49,7 @@ input[type="email"]:focus,
 input[type="number"]:focus,
 input[type="date"]:focus,
 input[type="password"]:focus,
+input[type="search"]:focus,
 select:focus,
 textarea:focus {
   outline: none;
@@ -233,7 +235,7 @@ textarea:focus {
 
 /* Graphique de répartition des bandes (image SVG générée côté serveur) */
 .band-chart-panel {
-  background: #fff;
+  background: #eaf3fd;
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 1rem 1rem 0.5rem;
@@ -316,6 +318,48 @@ tr.free { background: #fff; }
   padding: 0.75rem;
   border-radius: 6px;
 }
+
+.session-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.session-filters .search-input {
+  flex: 1 1 280px;
+  width: auto;
+}
+
+.filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #444;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.filter-toggle input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.no-results {
+  color: #666;
+  font-style: italic;
+}
+
+mark {
+  background: var(--brand-yellow);
+  color: #222;
+  border-radius: 3px;
+  padding: 0 0.15em;
+}
+
+.session-card[hidden] { display: none; }
 
 .session-list {
   display: grid;
