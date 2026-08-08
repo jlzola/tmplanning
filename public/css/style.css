@@ -317,7 +317,7 @@ textarea:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.2rem;
 }
 
 .grid-toolbar h2 { margin: 0; font-size: 1.15rem; }
@@ -326,8 +326,6 @@ textarea:focus {
   display: flex;
   gap: 0.5rem;
 }
-
-.table-scroll { overflow-x: auto; }
 
 table {
   width: 100%;
@@ -349,11 +347,6 @@ th {
   border-bottom: 2px solid var(--border);
 }
 
-.col-band, .col-mode { font-weight: 600; }
-
-tr.busy { background: #fdf2f2; }
-tr.free { background: #fff; }
-
 .chip {
   display: inline-block;
   padding: 0.15rem 0.55rem;
@@ -363,10 +356,163 @@ tr.free { background: #fff; }
   white-space: nowrap;
 }
 
-.chip-free { background: #eef8e3; color: var(--success); }
+.chip-free { background: #c8e9a5; color: var(--success); }
 .chip-busy { background: #fdecec; color: var(--danger); }
 
-.row-action-btn { width: 6rem; }
+/* Matrice bandes × modes */
+
+.matrix-legend {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: #666;
+  margin-bottom: 1.85rem;
+  justify-content: center;
+}
+
+.legend-item { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+.legend-swatch {
+  width: 0.8rem;
+  height: 0.8rem;
+  border-radius: 4px;
+  flex: none;
+}
+
+.legend-swatch.free { background: #fff; border: 1.5px solid var(--brand-green); }
+.legend-swatch.busy { background: var(--primary); }
+
+.matrix-scroll { overflow-x: auto; }
+
+/*
+ * 17rem = pire cas réaliste sur la 2e ligne d'une carte occupée :
+ * "10000000.00 kHz" (QO-100, ~10 GHz) à gauche + "depuis JJ/MM/AAAA HH:MM"
+ * à droite, sans retour à la ligne, avec le padding et l'écart de .cell-row.
+ */
+.bands-matrix {
+  display: grid;
+  grid-template-columns: 4.5rem repeat(3, minmax(16rem, 1fr));
+  gap: 6px;
+  min-width: 24rem;
+}
+
+.matrix-head {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+  text-align: center;
+  padding-bottom: 0.3rem;
+}
+
+.matrix-row { display: contents; }
+
+.matrix-band {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.cell {
+  position: relative;
+  min-height: 2.75rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.cell.free {
+  background: #fff;
+  border: 1.5px solid var(--brand-green);
+  color: var(--success);
+  cursor: pointer;
+}
+
+.cell.free:hover,
+.cell.free:focus-visible {
+  border-style: solid;
+  border-color: var(--primary);
+  background: #eaf3fd;
+  color: var(--primary);
+}
+
+.cell-reserve { display: none; font-size: 0.72rem; font-weight: 700; }
+
+.cell.free:hover .cell-dot,
+.cell.free:focus-visible .cell-dot { display: none; }
+
+.cell.free:hover .cell-reserve,
+.cell.free:focus-visible .cell-reserve { display: inline-block; }
+
+.cell.free.cell-disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.cell.free.cell-disabled:hover,
+.cell.free.cell-disabled:focus-visible {
+  border-color: var(--brand-green);
+  background: #fff;
+  color: var(--success);
+}
+
+.cell.busy {
+  position: relative;
+  background: var(--primary);
+  color: #fff;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.45rem 0.5rem;
+  text-align: left;
+  overflow: hidden;
+}
+
+.cell-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.cell-call { font-weight: 700; font-size: 0.85rem; }
+
+.cell-info-left,
+.cell-info-right {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cell-qrt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(17, 24, 39, 0.72);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+}
+
+.cell.busy:hover .cell-qrt,
+.cell.busy:focus-within .cell-qrt { opacity: 1; pointer-events: auto; }
+
+.cell-qrt button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+@media (max-width: 560px) {
+  .bands-matrix { grid-template-columns: 3.4rem repeat(3, 1fr); }
+}
 
 .error {
   background: #fdecec;

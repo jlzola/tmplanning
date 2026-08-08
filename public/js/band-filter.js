@@ -1,13 +1,14 @@
 (function () {
-  const HF_BANDS = ['80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m', '6m'];
-  const VHF_UHF_BANDS = ['2m', '70cm', '23cm'];
+  const HF_BANDS = ['80m', '60m', '40m', '30m', '20m', '17m', '15m', '12m', '10m'];
+  const VHF_UHF_BANDS = ['6m', '2m', '70cm', '23cm'];
 
   const filter = document.getElementById('band-filter');
   const bandChart = document.getElementById('band-chart');
-  const table = document.getElementById('grid-table');
-  if (!filter || !bandChart || !table) return;
+  const matrix = document.getElementById('bands-matrix');
+  const reserveBandSelect = document.getElementById('reserve-band');
+  if (!filter || !bandChart || !matrix) return;
 
-  const sessionId = table.dataset.sessionId;
+  const sessionId = matrix.dataset.sessionId;
   const STORAGE_KEY = `tmplanning:visible-bands:${sessionId}`;
   const checkboxes = [...filter.querySelectorAll('input[type="checkbox"]')];
   const allBands = checkboxes.map((cb) => cb.value);
@@ -32,12 +33,23 @@
     bandChart.src = `/sessions/${sessionId}/bands.svg?t=${Date.now()}${query}`;
   };
 
+  function updateReserveBandOptions(bands) {
+    if (!reserveBandSelect) return;
+    const previousValue = reserveBandSelect.value;
+    const orderedBands = allBands.filter((band) => bands.includes(band));
+    reserveBandSelect.innerHTML = orderedBands
+      .map((band) => `<option value="${band}">${band}</option>`)
+      .join('');
+    if (orderedBands.includes(previousValue)) reserveBandSelect.value = previousValue;
+  }
+
   function apply(bands) {
     visibleBands = bands;
     checkboxes.forEach((cb) => { cb.checked = bands.includes(cb.value); });
-    [...table.tBodies[0].rows].forEach((row) => {
+    matrix.querySelectorAll('.matrix-row').forEach((row) => {
       row.style.display = bands.includes(row.dataset.band) ? '' : 'none';
     });
+    updateReserveBandOptions(bands);
     window.refreshBandChartSrc();
   }
 

@@ -30,6 +30,15 @@ function zipOperators(body) {
   }));
 }
 
+function groupByBand(grid) {
+  const byBand = new Map();
+  grid.forEach((cell) => {
+    if (!byBand.has(cell.band)) byBand.set(cell.band, []);
+    byBand.get(cell.band).push(cell);
+  });
+  return [...byBand.entries()].map(([band, cells]) => ({ band, cells }));
+}
+
 function notFound(res) {
   return res.status(404).render('error', {
     title: 'Session introuvable',
@@ -68,7 +77,7 @@ export async function showSession(req, res, next) {
     res.render('sessions/show', {
       title: session.name,
       session,
-      grid,
+      bandRows: groupByBand(grid),
       bands: BANDS,
       modes: MODES
     });
@@ -279,7 +288,7 @@ async function renderSessionWithError(req, res, next, err) {
     res.status(400).render('sessions/show', {
       title: session.name,
       session,
-      grid,
+      bandRows: groupByBand(grid),
       bands: BANDS,
       modes: MODES,
       error: err.message

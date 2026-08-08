@@ -45,6 +45,20 @@ export async function releaseEntry(sessionId, band, mode) {
   return entry;
 }
 
+export async function releaseAllForSession(sessionId) {
+  const entries = await readAll();
+  const now = new Date().toISOString();
+  const released = [];
+  entries.forEach((e) => {
+    if (e.sessionId === sessionId && !e.qrt) {
+      e.qrt = now;
+      released.push(e);
+    }
+  });
+  if (released.length > 0) await writeAll(entries);
+  return released;
+}
+
 export async function deleteActivityForSession(sessionId) {
   const entries = await readAll();
   const remaining = entries.filter((e) => e.sessionId !== sessionId);

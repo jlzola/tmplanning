@@ -9,13 +9,24 @@
   const operatorSelect = document.getElementById('reserve-operator');
   const frequencyInput = document.getElementById('reserve-frequency');
 
+  const sessionId = document.getElementById('bands-matrix')?.dataset.sessionId;
   const lastOperatorKey = 'tmplanning:last-operator';
+  const lastModeKey = `tmplanning:last-mode:${sessionId}`;
+  const DEFAULT_MODE = 'SSB';
 
   function openDialog(band, mode) {
     const fromRow = Boolean(band && mode);
     form.reset();
     if (band) bandSelect.value = band;
-    if (mode) modeSelect.value = mode;
+    if (mode) {
+      modeSelect.value = mode;
+    } else {
+      const savedMode = localStorage.getItem(lastModeKey);
+      const hasSavedMode = Boolean(
+        savedMode && [...modeSelect.options].some((o) => o.value === savedMode)
+      );
+      modeSelect.value = hasSavedMode ? savedMode : DEFAULT_MODE;
+    }
 
     const lastOperator = localStorage.getItem(lastOperatorKey);
     const hasSavedOperator = Boolean(
@@ -38,6 +49,7 @@
 
   form.addEventListener('submit', () => {
     localStorage.setItem(lastOperatorKey, operatorSelect.value);
+    localStorage.setItem(lastModeKey, modeSelect.value);
   });
 
   const openBtn = document.getElementById('reserve-open-btn');

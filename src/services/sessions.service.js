@@ -6,7 +6,7 @@ import {
   updateSession,
   deleteSession
 } from '../data/sessions.store.js';
-import { deleteActivityForSession } from '../data/activity.store.js';
+import { deleteActivityForSession, releaseAllForSession } from '../data/activity.store.js';
 import { isValidSessionPassword, hashPassword, checkPassword } from '../utils/password.js';
 import { MASTER_PASSWORD_HASH } from '../config/masterPassword.js';
 
@@ -172,6 +172,7 @@ export async function verifySessionPassword(id, password) {
 export async function closeSession(id) {
   const updated = await updateSession(id, { closedAt: new Date().toISOString() });
   if (!updated) throw new Error('Session inconnue');
+  await releaseAllForSession(id);
   return updated;
 }
 

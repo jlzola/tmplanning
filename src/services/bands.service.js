@@ -36,6 +36,7 @@ export async function reserveBand(sessionId, { band, mode, operatorCall, frequen
 
   const session = await getSession(sessionId);
   if (!session) throw new Error('Session inconnue');
+  if (session.status === 'ended') throw new Error('Cette session est terminée, la réservation de créneaux n’est plus possible');
 
   const operator = session.operators.find((o) => o.call === operatorCall);
   if (!operator) throw new Error('Opérateur inconnu pour cette session');

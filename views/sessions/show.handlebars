@@ -44,8 +44,7 @@
         </div>
       </details>
       <a href="/sessions/{{session.id}}/edit" class="btn-secondary btn-small" id="manage-link"
-        data-session-id="{{session.id}}"
-        data-locked="{{#if session.passwordHash}}true{{else}}false{{/if}}"
+        data-session-id="{{session.id}}" data-locked="{{#if session.passwordHash}}true{{else}}false{{/if}}"
         title="Modifier le nom, les dates, les opérateurs, le statut">⚙ Gérer</a>
     </div>
   </div>
@@ -127,57 +126,65 @@
     <div class="grid-toolbar">
       <h2>État des bandes</h2>
       <div class="grid-toolbar-actions">
+        {{#unless (eq session.status 'ended')}}
         <button id="reserve-open-btn" class="btn btn-small" type="button">+ Réserver</button>
-        <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Refresh</button>
+        {{/unless}}
+        <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Actualiser</button>
       </div>
     </div>
 
-    <div class="table-scroll">
-      <table class="grid-table" id="grid-table" data-session-id="{{session.id}}">
-        <thead>
-          <tr>
-            <th>Bande</th>
-            <th>Mode</th>
-            <th>État</th>
-            <th>Opérateur</th>
-            <th>Locator</th>
-            <th>Département</th>
-            <th>Fréquence</th>
-            <th>QRV depuis</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {{#each grid}}
-          <tr class="{{#if this.free}}free{{else}}busy{{/if}}" data-band="{{this.band}}">
-            <td class="col-band">{{this.band}}</td>
-            <td class="col-mode">{{this.mode}}</td>
-            <td>
-              <span class="chip chip-{{#if this.free}}free{{else}}busy{{/if}}">
-                {{#if this.free}}Libre{{else}}Occupée{{/if}}
-              </span>
-            </td>
-            <td>{{this.operator}}</td>
-            <td>{{this.locator}}</td>
-            <td>{{this.department}}</td>
-            <td>{{this.frequency}}</td>
-            <td>{{formatDateTime this.qrvSince}}</td>
-            <td>
-              {{#if this.free}}
-              <button type="button" class="btn-secondary btn-small row-action-btn row-reserve-btn"
-                data-band="{{this.band}}" data-mode="{{this.mode}}">Réserver</button>
-              {{else}}
-              <form method="POST" action="/sessions/{{../session.id}}/release">
-                <input type="hidden" name="band" value="{{this.band}}">
-                <input type="hidden" name="mode" value="{{this.mode}}">
-                <button type="submit" class="btn-danger btn-small row-action-btn">QRT</button>
-              </form>
-              {{/if}}
-            </td>
-          </tr>
+    <div class="matrix-legend">
+      <span class="legend-item"><span class="legend-swatch free"></span> Libre — survol pour réserver</span>
+      <span class="legend-item"><span class="legend-swatch busy"></span> Occupée — survol pour libérer (QRT)</span>
+    </div>
+
+    <div class="matrix-scroll">
+      <div class="bands-matrix" id="bands-matrix" data-session-id="{{session.id}}"
+        data-session-ended="{{#if (eq session.status 'ended')}}true{{else}}false{{/if}}">
+        <div class="matrix-head"></div>
+        {{#each modes}}
+        <div class="matrix-head">{{this}}</div>
+        {{/each}}
+
+        {{#each bandRows}}
+        <div class="matrix-row" data-band="{{this.band}}">
+          <div class="matrix-band">{{this.band}}</div>
+          {{#each this.cells}}
+          {{#if this.free}}
+          {{#unless (eq ../../session.status 'ended')}}
+          <button type="button" class="cell free row-reserve-btn" data-band="{{this.band}}" data-mode="{{this.mode}}"
+            title="Réserver {{this.band}} · {{this.mode}}">
+            <span class="cell-dot" aria-hidden="true">·</span>
+            <span class="cell-reserve" aria-hidden="true">+ Réserver</span>
+          </button>
+          {{else}}
+          <div class="cell free cell-disabled" data-band="{{this.band}}" data-mode="{{this.mode}}" title="Session terminée">
+            <span class="cell-dot" aria-hidden="true">·</span>
+          </div>
+          {{/unless}}
+          {{else}}
+          <div class="cell busy" data-band="{{this.band}}" data-mode="{{this.mode}}">
+            <div class="cell-row">
+              <span class="cell-call">{{this.operator}}</span>
+              <span class="cell-info-right">{{#if this.locator}}{{this.locator}}{{#if this.department}}
+                ({{this.department}}){{/if}}{{else}}{{#if this.department}}({{this.department}}){{/if}}{{/if}}</span>
+            </div>
+            <div class="cell-row">
+              <span class="cell-info-left">{{#if this.frequency}}{{this.frequency}} kHz{{/if}}</span>
+              <span class="cell-info-right">depuis {{formatDateTime this.qrvSince}}</span>
+            </div>
+            <form method="POST" action="/sessions/{{../../session.id}}/release" class="cell-qrt"
+              data-confirm="Libérer le créneau de {{this.operator}} ?&#10;&#10;{{this.band}} · {{this.mode}}&#10;{{#if this.locator}}{{this.locator}}{{#if this.department}} ({{this.department}}){{/if}}&#10;{{else}}{{#if this.department}}({{this.department}})&#10;{{/if}}{{/if}}{{#if this.frequency}}{{this.frequency}} kHz&#10;{{/if}}QRV depuis {{formatDateTime this.qrvSince}}">
+              <input type="hidden" name="band" value="{{this.band}}">
+              <input type="hidden" name="mode" value="{{this.mode}}">
+              <button type="submit" class="btn-danger btn-small">QRT</button>
+            </form>
+          </div>
+          {{/if}}
           {{/each}}
-        </tbody>
-      </table>
+        </div>
+        {{/each}}
+      </div>
     </div>
   </div>
 </section>

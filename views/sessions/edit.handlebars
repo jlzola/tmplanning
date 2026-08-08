@@ -21,7 +21,7 @@
       </form>
       {{else}}
       {{#unless (eq session.status 'ended')}}
-      <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée.">
+      <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée et toutes les réservations en cours seront libérées.">
         <button type="submit" class="btn-icon btn-icon-danger">⏹ Clôturer</button>
       </form>
       {{/unless}}
