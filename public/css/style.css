@@ -1027,6 +1027,8 @@ input[type="file"]:focus-visible {
   cursor: pointer;
 }
 
+.share-checkbox-option[hidden] { display: none; }
+
 .share-blocks-fieldset {
   display: flex;
   flex-direction: column;
@@ -1039,6 +1041,8 @@ input[type="file"]:focus-visible {
   display: flex;
   gap: 0.5rem;
 }
+
+.share-link-row[hidden] { display: none; }
 
 .share-link-row input {
   flex: 1;
