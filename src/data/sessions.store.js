@@ -28,6 +28,11 @@ export async function getSessionById(id) {
   return sessions.find((s) => s.id === id) ?? null;
 }
 
+export async function getSessionByShareToken(token) {
+  const sessions = await readAll();
+  return sessions.find((s) => s.share?.token === token) ?? null;
+}
+
 export async function addSession(session) {
   const sessions = await readAll();
   sessions.push(session);

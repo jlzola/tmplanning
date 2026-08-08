@@ -13,15 +13,23 @@
       </p>
     </div>
     <div class="session-actions">
-      <a href="/sessions/{{session.id}}/export.json" class="btn-icon" title="Exporter la session (JSON)">⬇ JSON</a>
-      <a href="/sessions/{{session.id}}/operators.csv" class="btn-icon" title="Exporter les opérateurs (CSV)">⬇ CSV</a>
+      <button type="button" id="share-open-btn"
+        class="btn-secondary btn-small{{#if session.share.enabled}} share-active{{/if}}"
+        data-session-id="{{session.id}}" data-share='{{{json session.share}}}'
+        title="Créer ou gérer un lien de partage public en lecture seule">
+        🔗 {{#if session.share.enabled}}Partage actif{{else}}Partage{{/if}}
+      </button>
+      <a href="/sessions/{{session.id}}/export.json" class="btn-icon"
+        title="Enregistrer la session dans un fichier (JSON)">⬇ Enregistrer dans un fichier</a>
       {{#if session.closedAt}}
-      <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form" data-confirm="Réouvrir cette session ?">
+      <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form"
+        data-confirm="Réouvrir cette session ?">
         <button type="submit" class="btn-icon">↺ Réouvrir</button>
       </form>
       {{else}}
       {{#unless (eq session.status 'ended')}}
-      <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form" data-confirm="Clôturer cette session ? Elle passera au statut Terminée et toutes les réservations en cours seront libérées.">
+      <form method="POST" action="/sessions/{{session.id}}/close" class="inline-form"
+        data-confirm="Clôturer cette session ? Elle passera au statut Terminée et toutes les réservations en cours seront libérées.">
         <button type="submit" class="btn-icon btn-icon-danger">⏹ Clôturer</button>
       </form>
       {{/unless}}
@@ -32,6 +40,64 @@
   {{#if error}}
   <p class="error">{{error}}</p>
   {{/if}}
+
+  <dialog id="share-dialog" class="share-dialog">
+    <form id="share-form">
+      <h2>Partager cette session</h2>
+      <p class="share-dialog-intro">Créez un lien public en lecture seule vers une page simplifiée de cette
+        session.</p>
+
+      <fieldset class="share-bands-fieldset">
+        <legend>Bandes visibles</legend>
+        <div class="band-filter-actions">
+          <button type="button" id="share-band-all">Toutes</button>
+          <button type="button" id="share-band-none">Aucune</button>
+          <button type="button" id="share-band-hf">HF</button>
+          <button type="button" id="share-band-vhf">VHF/UHF</button>
+        </div>
+        <div class="share-bands-list">
+          {{#each bands}}
+          <label class="share-band-option">
+            <input type="checkbox" name="bands" value="{{this}}" class="share-band-checkbox" checked>
+            {{this}}
+          </label>
+          {{/each}}
+        </div>
+      </fieldset>
+
+      <fieldset class="share-blocks-fieldset">
+        <legend>Blocs affichés</legend>
+        <label class="share-checkbox-option">
+          <input type="checkbox" id="share-show-usage" checked>
+          Utilisation des bandes
+        </label>
+        <label class="share-checkbox-option">
+          <input type="checkbox" id="share-show-status" checked>
+          État des bandes
+        </label>
+      </fieldset>
+
+      <label class="share-checkbox-option share-enabled-option" id="share-enabled-row" hidden>
+        <input type="checkbox" id="share-enabled">
+        Partage actif
+      </label>
+
+      <p class="error" id="share-error" hidden></p>
+
+      <div class="share-link-row" id="share-link-row" hidden>
+        <input type="text" id="share-link-input" readonly aria-label="Lien de partage">
+        <button type="button" class="btn-icon" id="share-copy-btn" title="Copier le lien">📋 Copier</button>
+        <a href="#" id="share-open-link" class="btn-icon" target="_blank" rel="noopener noreferrer"
+          title="Ouvrir la page de partage dans un nouvel onglet">↗ Ouvrir</a>
+      </div>
+      <p class="share-copied" id="share-copied" hidden>Lien copié !</p>
+
+      <div class="form-actions">
+        <button type="button" id="share-close-btn" class="btn-secondary">Fermer</button>
+        <button type="submit" class="btn" id="share-save-btn">Créer le lien</button>
+      </div>
+    </form>
+  </dialog>
 
   <form method="POST" action="/sessions/{{session.id}}/edit" class="session-form">
     <label>
@@ -65,8 +131,7 @@
     <label>
       Nouveau mot de passe de gestion
       {{#> password-field}}
-      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}"
-        autocomplete="new-password"
+      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}" autocomplete="new-password"
         title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
         placeholder="Laisser vide pour conserver le mot de passe actuel">
       {{/password-field}}
@@ -79,8 +144,7 @@
     <label>
       Mot de passe de gestion (optionnel)
       {{#> password-field}}
-      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}"
-        autocomplete="new-password"
+      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}" autocomplete="new-password"
         title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
         placeholder="Laisser vide pour ne pas protéger la session">
       {{/password-field}}
@@ -89,10 +153,14 @@
     <p class="field-hint">8 caractères minimum, lettres et chiffres uniquement, pas de caractères spéciaux.</p>
 
     <h2>Opérateurs</h2>
-    <label class="file-import">
-      Importer des opérateurs (CSV : call,locator,department)
-      <input type="file" id="csv-import" accept=".csv,text/csv">
-    </label>
+    <div class="operators-toolbar">
+      <label class="file-import">
+        Importer des opérateurs (CSV : call,locator,department)
+        <input type="file" id="csv-import" accept=".csv,text/csv">
+      </label>
+      <a href="/sessions/{{session.id}}/operators.csv" class="btn-icon" title="Exporter les opérateurs (CSV)">⬇ Exporter
+        les opérateurs (CSV)</a>
+    </div>
 
     {{> operator-rows}}
     <button type="button" id="add-operator" class="btn-secondary">+ Ajouter un opérateur</button>
@@ -104,7 +172,8 @@
 
   <div class="danger-zone">
     <h2>Zone de danger</h2>
-    <form method="POST" action="/sessions/{{session.id}}/delete" class="inline-form" data-confirm="Supprimer définitivement cette session et son activité ?">
+    <form method="POST" action="/sessions/{{session.id}}/delete" class="inline-form"
+      data-confirm="Supprimer définitivement cette session et son activité ?">
       <button type="submit" class="btn-danger">Supprimer la session</button>
     </form>
   </div>
@@ -112,3 +181,4 @@
 
 <script src="/js/session-form.js"></script>
 <script src="/js/password-toggle.js"></script>
+<script src="/js/session-share.js"></script>

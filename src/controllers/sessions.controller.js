@@ -6,17 +6,23 @@ import {
   closeSession,
   reopenSession,
   removeSession,
-  verifySessionPassword
+  verifySessionPassword,
+  saveShareConfig
 } from '../services/sessions.service.js';
 import { listGrid, reserveBand, releaseBand } from '../services/bands.service.js';
 import { slugify, operatorsToCsv } from '../utils/format.js';
 import { renderBandChartSvg } from '../utils/bandChart.js';
 import { getCookie } from '../utils/cookies.js';
 import { unlockCookieName, createUnlockToken, isUnlockTokenValid, UNLOCK_MAX_AGE_MS } from '../utils/sessionUnlock.js';
+import { groupByBand } from '../utils/grid.js';
 
 function toArray(value) {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
+}
+
+function toBool(value) {
+  return value === true || value === 'true';
 }
 
 function zipOperators(body) {
@@ -28,15 +34,6 @@ function zipOperators(body) {
     locator: locators[i],
     department: departments[i]
   }));
-}
-
-function groupByBand(grid) {
-  const byBand = new Map();
-  grid.forEach((cell) => {
-    if (!byBand.has(cell.band)) byBand.set(cell.band, []);
-    byBand.get(cell.band).push(cell);
-  });
-  return [...byBand.entries()].map(([band, cells]) => ({ band, cells }));
 }
 
 function notFound(res) {
@@ -132,7 +129,8 @@ export async function showEditSessionForm(req, res, next) {
     res.render('sessions/edit', {
       title: `Modifier ${session.name}`,
       session,
-      values: session
+      values: session,
+      bands: BANDS
     });
   } catch (err) {
     next(err);
@@ -156,7 +154,8 @@ export async function update(req, res, next) {
         title: `Modifier ${session.name}`,
         session,
         error: err.message,
-        values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } }
+        values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } },
+        bands: BANDS
       });
     } catch (renderErr) {
       next(renderErr);
@@ -277,6 +276,20 @@ export async function release(req, res, next) {
     res.redirect(`/sessions/${req.params.id}`);
   } catch (err) {
     await renderSessionWithError(req, res, next, err);
+  }
+}
+
+export async function saveShare(req, res, next) {
+  try {
+    const bands = toArray(req.body.bands).filter((band) => BANDS.includes(band));
+    const showUsage = toBool(req.body.showUsage);
+    const showStatus = toBool(req.body.showStatus);
+    const enabled = toBool(req.body.enabled);
+
+    const share = await saveShareConfig(req.params.id, { bands, showUsage, showStatus, enabled });
+    res.json({ ok: true, share, link: `${req.protocol}://${req.get('host')}/share/${share.token}` });
+  } catch (err) {
+    res.status(400).json({ ok: false, error: err.message });
   }
 }
 

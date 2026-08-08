@@ -15,7 +15,8 @@ import {
   reserve,
   release,
   requireUnlocked,
-  verifyPassword
+  verifyPassword,
+  saveShare
 } from '../controllers/sessions.controller.js';
 
 const router = Router();
@@ -35,5 +36,6 @@ router.get('/api/sessions/:id/bands', apiGrid);
 router.get('/sessions/:id/bands.svg', bandChartSvg);
 router.post('/sessions/:id/reserve', reserve);
 router.post('/sessions/:id/release', release);
+router.post('/sessions/:id/share', saveShare);
 
 export default router;

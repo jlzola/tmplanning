@@ -762,6 +762,20 @@ mark {
   margin-bottom: 1rem;
 }
 
+.operators-toolbar {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.operators-toolbar .file-import {
+  flex: 1;
+  min-width: 16rem;
+  margin-bottom: 0;
+}
+
 /* Champs fichier : bouton natif aligné sur la charte (même style que .btn-icon) */
 input[type="file"] {
   font-family: inherit;
@@ -952,3 +966,145 @@ input[type="file"]:focus-visible {
 }
 
 .btn-donate:hover { background: #e6a900; }
+
+/* Partage : bouton d'ouverture, modale de configuration, page publique */
+
+.share-active {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.share-dialog {
+  border: none;
+  border-radius: 18px;
+  padding: 1.75rem;
+  width: min(28rem, 90vw);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
+}
+
+.share-dialog::backdrop { background: rgba(20, 30, 45, 0.45); }
+
+.share-dialog h2 { margin-top: 0; }
+
+.share-dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.share-dialog-intro {
+  margin: -0.4rem 0 0;
+  font-size: 0.88rem;
+  color: #666;
+}
+
+.share-dialog fieldset {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 0.9rem 0.9rem;
+  margin: 0;
+}
+
+.share-dialog legend {
+  padding: 0 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.share-bands-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(4.5rem, 1fr));
+  gap: 0.4rem 0.75rem;
+}
+
+.share-band-option,
+.share-checkbox-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.share-blocks-fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.share-enabled-option { font-weight: 600; }
+
+.share-link-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-link-row input {
+  flex: 1;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  color: #555;
+  background: #f5f6f8;
+}
+
+.share-copied {
+  margin: -0.4rem 0 0;
+  font-size: 0.85rem;
+  color: var(--success);
+}
+
+.share-dialog .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0;
+}
+
+/* Page de partage publique : minimaliste, sans entête ni menu */
+
+.share-page .session-header { margin-bottom: 0; }
+
+.share-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.6rem;
+}
+
+.share-toolbar + .grid-panel { margin-top: 0.75rem; }
+
+.share-unavailable {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.share-unavailable-brand {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  text-decoration: none;
+}
+
+.share-unavailable-brand .brand-icon { height: 3.9rem; width: auto; }
+
+.footer-share { margin-top: 1rem; padding: 1rem 1rem 1.25rem; }
+.footer-share p { margin: 0.3rem 0; }
+.footer-share .footer-logo {
+  height: 3rem;
+}
+.footer-share .footer-brand {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0.4rem 0 0;
+  gap: 0.4rem;
+}
+
+.share-page .cell.free:hover,
+.share-page .cell.free:focus-visible {
+  border-color: var(--brand-green);
+  background: #fff;
+  color: var(--success);
+}
+
+.share-page .cell.free:hover .cell-dot,
+.share-page .cell.free:focus-visible .cell-dot { display: inline; }

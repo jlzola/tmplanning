@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import {
   getAllSessions,
   getSessionById,
+  getSessionByShareToken as getSessionByShareTokenFromStore,
   addSession,
   updateSession,
   deleteSession
@@ -9,6 +10,7 @@ import {
 import { deleteActivityForSession, releaseAllForSession } from '../data/activity.store.js';
 import { isValidSessionPassword, hashPassword, checkPassword } from '../utils/password.js';
 import { MASTER_PASSWORD_HASH } from '../config/masterPassword.js';
+import { BANDS } from '../config/constants.js';
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -102,12 +104,21 @@ export async function listSessions() {
     .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status] || a.startDate.localeCompare(b.startDate));
 }
 
-export async function getSession(id) {
-  const session = await getSessionById(id);
+function enrichSession(session) {
   if (!session) return null;
   const now = today();
   const status = computeStatus(session, now);
   return { ...session, status, dateInfo: describeDates(session, now, status) };
+}
+
+export async function getSession(id) {
+  const session = await getSessionById(id);
+  return enrichSession(session);
+}
+
+export async function getSessionByShareToken(token) {
+  const session = await getSessionByShareTokenFromStore(token);
+  return enrichSession(session);
 }
 
 export async function createSession({
@@ -186,4 +197,36 @@ export async function removeSession(id) {
   const deleted = await deleteSession(id);
   if (!deleted) throw new Error('Session inconnue');
   await deleteActivityForSession(id);
+}
+
+export async function saveShareConfig(id, { bands, showUsage, showStatus, enabled }) {
+  const cleanBands = (bands ?? []).filter((band) => BANDS.includes(band));
+
+  if (!cleanBands.length) {
+    throw new Error('Sélectionnez au moins une bande');
+  }
+
+  if (!showUsage && !showStatus) {
+    throw new Error('Sélectionnez au moins un bloc à afficher (Utilisation des bandes et/ou État des bandes)');
+  }
+
+  const session = await getSessionById(id);
+  if (!session) throw new Error('Session inconnue');
+
+  const now = new Date().toISOString();
+
+  const share = {
+    token: session.share?.token ?? randomUUID(),
+    bands: cleanBands,
+    showUsage: Boolean(showUsage),
+    showStatus: Boolean(showStatus),
+    enabled: Boolean(enabled),
+    createdAt: session.share?.createdAt ?? now,
+    updatedAt: now
+  };
+
+  const updated = await updateSession(id, { share });
+  if (!updated) throw new Error('Session inconnue');
+
+  return updated.share;
 }

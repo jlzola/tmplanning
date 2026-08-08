@@ -1,0 +1,10 @@
+<section class="share-page share-unavailable">
+  <a href="/" class="share-unavailable-brand">{{> brand-mark}}</a>
+  <h1>{{title}}</h1>
+  {{#if (eq reason 'inactive')}}
+  <p>Ce lien de partage n'est plus actif. Le créateur de la session l'a désactivé.</p>
+  {{else}}
+  <p>Ce lien de partage n'existe pas ou n'est plus disponible.</p>
+  {{/if}}
+  <p><a href="/" target="_blank" rel="noopener noreferrer">Aller vers la page d'accueil de {{appName}}</a></p>
+</section>

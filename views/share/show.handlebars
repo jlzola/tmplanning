@@ -1,0 +1,75 @@
+<section class="share-page">
+  <div class="session-header">
+    <div>
+      <div class="session-title-row">
+        <h1>{{session.name}}</h1>
+        <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+      </div>
+      <p class="session-dates">
+        {{formatDate session.startDate}} → {{formatDate session.endDate}}
+        <span class="date-info">· {{session.dateInfo}}</span>
+      </p>
+      {{#if session.creator}}
+      <p class="session-creator">Créée par {{session.creator.call}} {{session.creator.firstName}}</p>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="share-toolbar">
+    <a href="{{refreshUrl}}" class="btn-secondary btn-small">↻ Actualiser</a>
+  </div>
+
+  {{#if share.showUsage}}
+  <div class="band-chart-panel">
+    <h2>Utilisation des bandes</h2>
+    <img src="{{chartUrl}}" alt="Répartition des bandes occupées par les opérateurs" class="band-chart">
+  </div>
+  {{/if}}
+
+  {{#if share.showStatus}}
+  <div class="grid-panel">
+    <div class="grid-toolbar">
+      <h2>État des bandes</h2>
+    </div>
+
+    <div class="matrix-legend">
+      <span class="legend-item"><span class="legend-swatch free"></span> Libre</span>
+      <span class="legend-item"><span class="legend-swatch busy"></span> Occupée</span>
+    </div>
+
+    <div class="matrix-scroll">
+      <div class="bands-matrix">
+        <div class="matrix-head"></div>
+        {{#each modes}}
+        <div class="matrix-head">{{this}}</div>
+        {{/each}}
+
+        {{#each bandRows}}
+        <div class="matrix-row">
+          <div class="matrix-band">{{this.band}}</div>
+          {{#each this.cells}}
+          {{#if this.free}}
+          <div class="cell free">
+            <span class="cell-dot" aria-hidden="true">·</span>
+          </div>
+          {{else}}
+          <div class="cell busy">
+            <div class="cell-row">
+              <span class="cell-call">{{this.operator}}</span>
+              <span class="cell-info-right">{{#if this.locator}}{{this.locator}}{{#if this.department}}
+                ({{this.department}}){{/if}}{{else}}{{#if this.department}}({{this.department}}){{/if}}{{/if}}</span>
+            </div>
+            <div class="cell-row">
+              <span class="cell-info-left">{{#if this.frequency}}{{this.frequency}} kHz{{/if}}</span>
+              <span class="cell-info-right">depuis {{formatDateTime this.qrvSince}}</span>
+            </div>
+          </div>
+          {{/if}}
+          {{/each}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+  {{/if}}
+</section>

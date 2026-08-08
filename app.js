@@ -27,7 +27,8 @@ app.engine('handlebars', engine({
     eq: (a, b) => a === b,
     statusLabel: (status) => STATUS_LABELS[status] ?? status,
     formatDate: (dateStr) => (dateStr ? DATE_FORMATTER.format(new Date(dateStr)) : ''),
-    formatDateTime
+    formatDateTime,
+    json: (value) => JSON.stringify(value ?? null)
   }
 }));
 app.set('view engine', 'handlebars');
