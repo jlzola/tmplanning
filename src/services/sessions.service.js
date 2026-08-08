@@ -92,6 +92,16 @@ function validateSessionPassword(password) {
   return password;
 }
 
+function validateUsagePassword(password) {
+  if (!password) return undefined;
+  if (!isValidSessionPassword(password)) {
+    throw new Error(
+      "Le mot de passe d'utilisation doit contenir au moins 8 caractères, uniquement des lettres et des chiffres (pas de caractères spéciaux)"
+    );
+  }
+  return password;
+}
+
 export async function listSessions() {
   const sessions = await getAllSessions();
   const now = today();
@@ -122,12 +132,13 @@ export async function getSessionByShareToken(token) {
 }
 
 export async function createSession({
-  name, startDate, endDate, operators, creatorCall, creatorFirstName, password
+  name, startDate, endDate, operators, creatorCall, creatorFirstName, password, usagePassword
 }) {
   const { operators: cleanOperators, creator } = validateSessionInput({
     name, startDate, endDate, operators, creatorCall, creatorFirstName
   });
   const cleanPassword = validateSessionPassword(password);
+  const cleanUsagePassword = validateUsagePassword(usagePassword);
 
   const session = {
     id: randomUUID(),
@@ -137,6 +148,7 @@ export async function createSession({
     creator,
     operators: cleanOperators,
     passwordHash: cleanPassword ? hashPassword(cleanPassword) : null,
+    usagePassword: cleanUsagePassword ?? null,
     closedAt: null,
     createdAt: new Date().toISOString()
   };
@@ -145,7 +157,7 @@ export async function createSession({
 }
 
 export async function editSession(id, {
-  name, startDate, endDate, operators, creatorCall, creatorFirstName, password, removePassword
+  name, startDate, endDate, operators, creatorCall, creatorFirstName, password, removePassword, usagePassword
 }) {
   const { operators: cleanOperators, creator } = validateSessionInput({
     name, startDate, endDate, operators, creatorCall, creatorFirstName
@@ -166,6 +178,9 @@ export async function editSession(id, {
     if (cleanPassword) updates.passwordHash = hashPassword(cleanPassword);
   }
 
+  const trimmedUsagePassword = usagePassword?.trim();
+  updates.usagePassword = trimmedUsagePassword ? validateUsagePassword(trimmedUsagePassword) : null;
+
   const updated = await updateSession(id, updates);
   if (!updated) throw new Error('Session inconnue');
 
@@ -178,6 +193,14 @@ export async function verifySessionPassword(id, password) {
   if (checkPassword(password ?? '', MASTER_PASSWORD_HASH)) return true;
   if (!session.passwordHash) return true;
   return checkPassword(password ?? '', session.passwordHash);
+}
+
+export async function verifyUsagePassword(id, password) {
+  const session = await getSessionById(id);
+  if (!session) throw new Error('Session inconnue');
+  if (checkPassword(password ?? '', MASTER_PASSWORD_HASH)) return true;
+  if (!session.usagePassword) return true;
+  return password === session.usagePassword;
 }
 
 export async function closeSession(id) {

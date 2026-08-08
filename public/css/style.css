@@ -639,6 +639,14 @@ mark {
 
 .session-card-header .badge { flex-shrink: 0; }
 
+.session-card-badges {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .session-header {
   align-items: flex-start;
   flex-wrap: wrap;
@@ -704,6 +712,25 @@ mark {
 .badge-ongoing { background: var(--success); }
 .badge-upcoming { background: var(--warning); }
 .badge-ended { background: #8a94a3; }
+
+.badge-public { background: var(--primary); }
+.badge-private { background: var(--brand-orange); }
+
+.usage-readonly-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background: #eaf3fd;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: #444;
+}
 
 .session-form {
   background: #fff;

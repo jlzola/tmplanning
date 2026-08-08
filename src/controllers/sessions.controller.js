@@ -7,13 +7,17 @@ import {
   reopenSession,
   removeSession,
   verifySessionPassword,
+  verifyUsagePassword,
   saveShareConfig
 } from '../services/sessions.service.js';
 import { listGrid, reserveBand, releaseBand } from '../services/bands.service.js';
 import { slugify, operatorsToCsv } from '../utils/format.js';
 import { renderBandChartSvg } from '../utils/bandChart.js';
 import { getCookie } from '../utils/cookies.js';
-import { unlockCookieName, createUnlockToken, isUnlockTokenValid, UNLOCK_MAX_AGE_MS } from '../utils/sessionUnlock.js';
+import {
+  unlockCookieName, createUnlockToken, isUnlockTokenValid, UNLOCK_MAX_AGE_MS,
+  usageUnlockCookieName, USAGE_UNLOCK_MAX_AGE_MS
+} from '../utils/sessionUnlock.js';
 import { groupByBand } from '../utils/grid.js';
 
 function toArray(value) {
@@ -43,24 +47,32 @@ function notFound(res) {
   });
 }
 
+function isUsageUnlocked(req, session) {
+  if (!session.usagePassword) return true;
+  const token = getCookie(req, usageUnlockCookieName(session.id));
+  return isUnlockTokenValid(session.id, session.usagePassword, token);
+}
+
 export function showNewSessionForm(req, res) {
   res.render('sessions/new', { title: 'Nouvelle session' });
 }
 
 export async function create(req, res) {
-  const { name, startDate, endDate, creatorCall, creatorFirstName, password } = req.body;
+  const { name, startDate, endDate, creatorCall, creatorFirstName, password, usagePassword } = req.body;
   const operators = zipOperators(req.body);
 
   try {
     const session = await createSession({
-      name, startDate, endDate, operators, creatorCall, creatorFirstName, password
+      name, startDate, endDate, operators, creatorCall, creatorFirstName, password, usagePassword
     });
     res.redirect(`/sessions/${session.id}`);
   } catch (err) {
     res.status(400).render('sessions/new', {
       title: 'Nouvelle session',
       error: err.message,
-      values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } }
+      values: {
+        name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName }, usagePassword
+      }
     });
   }
 }
@@ -70,13 +82,16 @@ export async function showSession(req, res, next) {
     const session = await getSession(req.params.id);
     if (!session) return notFound(res);
 
+    const readOnly = Boolean(session.usagePassword) && !isUsageUnlocked(req, session);
     const grid = await listGrid(session.id);
     res.render('sessions/show', {
       title: session.name,
       session,
       bandRows: groupByBand(grid),
       bands: BANDS,
-      modes: MODES
+      modes: MODES,
+      readOnly,
+      canReserve: session.status !== 'ended' && !readOnly
     });
   } catch (err) {
     next(err);
@@ -93,6 +108,21 @@ export async function requireUnlocked(req, res, next) {
       if (!isUnlockTokenValid(session.id, session.passwordHash, token)) {
         return res.redirect(`/sessions/${session.id}?locked=1`);
       }
+    }
+
+    next();
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function requireUsageUnlocked(req, res, next) {
+  try {
+    const session = await getSession(req.params.id);
+    if (!session) return notFound(res);
+
+    if (!isUsageUnlocked(req, session)) {
+      return res.redirect(`/sessions/${session.id}`);
     }
 
     next();
@@ -121,6 +151,30 @@ export async function verifyPassword(req, res, next) {
   }
 }
 
+export async function verifyUsage(req, res, next) {
+  try {
+    const session = await getSession(req.params.id);
+    if (!session) return res.status(404).json({ ok: false, error: 'Session introuvable' });
+
+    const ok = await verifyUsagePassword(session.id, req.body?.password);
+    if (!ok) return res.status(401).json({ ok: false, error: 'Mot de passe incorrect' });
+
+    res.cookie(
+      usageUnlockCookieName(session.id),
+      createUnlockToken(session.id, session.usagePassword, USAGE_UNLOCK_MAX_AGE_MS),
+      {
+        httpOnly: true,
+        sameSite: 'lax',
+        maxAge: USAGE_UNLOCK_MAX_AGE_MS,
+        path: `/sessions/${session.id}`
+      }
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function showEditSessionForm(req, res, next) {
   try {
     const session = await getSession(req.params.id);
@@ -138,12 +192,14 @@ export async function showEditSessionForm(req, res, next) {
 }
 
 export async function update(req, res, next) {
-  const { name, startDate, endDate, creatorCall, creatorFirstName, password, removePassword } = req.body;
+  const {
+    name, startDate, endDate, creatorCall, creatorFirstName, password, removePassword, usagePassword
+  } = req.body;
   const operators = zipOperators(req.body);
 
   try {
     const session = await editSession(req.params.id, {
-      name, startDate, endDate, operators, creatorCall, creatorFirstName, password, removePassword
+      name, startDate, endDate, operators, creatorCall, creatorFirstName, password, removePassword, usagePassword
     });
     res.redirect(`/sessions/${session.id}`);
   } catch (err) {
@@ -154,7 +210,9 @@ export async function update(req, res, next) {
         title: `Modifier ${session.name}`,
         session,
         error: err.message,
-        values: { name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName } },
+        values: {
+          name, startDate, endDate, operators, creator: { call: creatorCall, firstName: creatorFirstName }, usagePassword
+        },
         bands: BANDS
       });
     } catch (renderErr) {
@@ -297,6 +355,7 @@ async function renderSessionWithError(req, res, next, err) {
   try {
     const session = await getSession(req.params.id);
     if (!session) return notFound(res);
+    const readOnly = Boolean(session.usagePassword) && !isUsageUnlocked(req, session);
     const grid = await listGrid(req.params.id);
     res.status(400).render('sessions/show', {
       title: session.name,
@@ -304,6 +363,8 @@ async function renderSessionWithError(req, res, next, err) {
       bandRows: groupByBand(grid),
       bands: BANDS,
       modes: MODES,
+      readOnly,
+      canReserve: session.status !== 'ended' && !readOnly,
       error: err.message
     });
   } catch (renderErr) {

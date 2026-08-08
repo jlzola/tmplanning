@@ -35,7 +35,12 @@
       <div class="session-card-watermark" aria-hidden="true"></div>
       <div class="session-card-header">
         <h3><span data-hl="name">{{this.name}}</span></h3>
-        <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
+        <span class="session-card-badges">
+          <span class="badge badge-{{this.status}}">{{statusLabel this.status}}</span>
+          <span class="badge {{#if this.usagePassword}}badge-private{{else}}badge-public{{/if}}">
+            {{#if this.usagePassword}}🔒 Privée{{else}}🌐 Publique{{/if}}
+          </span>
+        </span>
       </div>
       <p class="session-dates">📅 {{formatDate this.startDate}} → {{formatDate this.endDate}}</p>
       <p class="date-info">⏳ {{this.dateInfo}}</p>

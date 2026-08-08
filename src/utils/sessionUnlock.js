@@ -15,8 +15,16 @@ export function unlockCookieName(sessionId) {
   return `su_${sessionId}`;
 }
 
-export function createUnlockToken(sessionId, passwordHash) {
-  const expiry = Date.now() + UNLOCK_MAX_AGE_MS;
+// Mot de passe d'utilisation : verrou distinct du mot de passe de gestion,
+// avec une durée de vie longue pour ne (quasi) jamais redemander la saisie.
+const USAGE_UNLOCK_MAX_AGE_MS = 365 * 24 * 60 * 60 * 1000;
+
+export function usageUnlockCookieName(sessionId) {
+  return `su_use_${sessionId}`;
+}
+
+export function createUnlockToken(sessionId, passwordHash, ttlMs = UNLOCK_MAX_AGE_MS) {
+  const expiry = Date.now() + ttlMs;
   return `${expiry}.${sign(sessionId, expiry, passwordHash)}`;
 }
 
@@ -33,4 +41,4 @@ export function isUnlockTokenValid(sessionId, passwordHash, token) {
   return timingSafeEqual(expected, actual);
 }
 
-export { UNLOCK_MAX_AGE_MS };
+export { UNLOCK_MAX_AGE_MS, USAGE_UNLOCK_MAX_AGE_MS };

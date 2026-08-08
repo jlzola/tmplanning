@@ -6,6 +6,9 @@
       <div class="session-title-row">
         <h1>Gérer {{session.name}}</h1>
         <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+        <span class="badge {{#if session.usagePassword}}badge-private{{else}}badge-public{{/if}}">
+          {{#if session.usagePassword}}🔒 Privée{{else}}🌐 Publique{{/if}}
+        </span>
       </div>
       <p class="session-dates">
         {{formatDate session.startDate}} → {{formatDate session.endDate}}
@@ -20,7 +23,7 @@
         🔗 {{#if session.share.enabled}}Partage actif{{else}}Partage{{/if}}
       </button>
       <a href="/sessions/{{session.id}}/export.json" class="btn-icon"
-        title="Enregistrer la session dans un fichier (JSON)">⬇ Enregistrer dans un fichier</a>
+        title="Exporter la session dans un fichier (JSON)">⬇ Exporter dans un fichier (JSON)</a>
       {{#if session.closedAt}}
       <form method="POST" action="/sessions/{{session.id}}/reopen" class="inline-form"
         data-confirm="Réouvrir cette session ?">
@@ -151,6 +154,21 @@
     </label>
     {{/if}}
     <p class="field-hint">8 caractères minimum, lettres et chiffres uniquement, pas de caractères spéciaux.</p>
+
+    <label>
+      Mot de passe d'utilisation de la session (optionnel)
+      {{#> password-field}}
+      <input type="password" name="usagePassword" minlength="8" pattern="[A-Za-z0-9]{8,}" autocomplete="off"
+        value="{{values.usagePassword}}"
+        title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
+        placeholder="Laisser vide pour que la session reste publique">
+      {{/password-field}}
+    </label>
+    <p class="field-hint">
+      Si renseigné, la session devient <strong>privée</strong> : ce mot de passe sera demandé aux utilisateurs pour
+      consulter la session et réserver/libérer des créneaux (une seule fois, il est ensuite mémorisé sur leur
+      appareil). La page de partage n'est pas concernée. 8 caractères minimum, lettres et chiffres uniquement.
+    </p>
 
     <h2>Opérateurs</h2>
     <div class="operators-toolbar">

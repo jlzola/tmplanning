@@ -52,6 +52,20 @@
       8 caractères minimum, lettres et chiffres uniquement, pas de caractères spéciaux.
     </p>
 
+    <label>
+      Mot de passe d'utilisation de la session (optionnel)
+      {{#> password-field}}
+      <input type="password" name="usagePassword" minlength="8" pattern="[A-Za-z0-9]{8,}" autocomplete="off"
+        value="{{values.usagePassword}}"
+        title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
+        placeholder="Laisser vide pour que la session reste publique">
+      {{/password-field}}
+    </label>
+    <p class="field-hint">
+      Si renseigné, la session sera <strong>privée</strong> : ce mot de passe sera demandé aux utilisateurs pour
+      consulter la session et réserver/libérer des créneaux. 8 caractères minimum, lettres et chiffres uniquement.
+    </p>
+
     <h2>Opérateurs</h2>
     <label class="file-import">
       Importer des opérateurs (CSV : call,locator,department)

@@ -6,6 +6,9 @@
       <div class="session-title-row">
         <h1>{{session.name}}</h1>
         <span class="badge badge-{{session.status}}">{{statusLabel session.status}}</span>
+        <span class="badge {{#if session.usagePassword}}badge-private{{else}}badge-public{{/if}}">
+          {{#if session.usagePassword}}🔒 Privée{{else}}🌐 Publique{{/if}}
+        </span>
       </div>
       <p class="session-dates">
         {{formatDate session.startDate}} → {{formatDate session.endDate}}
@@ -51,6 +54,31 @@
 
   {{#if error}}
   <p class="error">{{error}}</p>
+  {{/if}}
+
+  {{#if readOnly}}
+  <div class="usage-readonly-banner" id="usage-readonly-banner" data-session-id="{{session.id}}">
+    <span>🔒 Session privée — lecture seule. Un mot de passe est requis pour réserver ou libérer un créneau.</span>
+    <button type="button" id="usage-unlock-btn" class="btn-secondary btn-small">Entrer le mot de passe</button>
+  </div>
+
+  <dialog id="usage-password-dialog" class="password-dialog">
+    <form id="usage-password-form">
+      <h2>Mot de passe d'utilisation</h2>
+      <p>Saisissez le mot de passe d'utilisation de cette session pour réserver ou libérer un créneau.</p>
+      <label>
+        Mot de passe
+        {{#> password-field}}
+        <input type="password" id="usage-password-input" required autocomplete="off">
+        {{/password-field}}
+      </label>
+      <p class="error" id="usage-password-error" hidden></p>
+      <div class="form-actions">
+        <button type="button" id="usage-password-cancel" class="btn-secondary">Annuler</button>
+        <button type="submit" class="btn">Valider</button>
+      </div>
+    </form>
+  </dialog>
   {{/if}}
 
   <dialog id="password-dialog" class="password-dialog">
@@ -126,9 +154,9 @@
     <div class="grid-toolbar">
       <h2>État des bandes</h2>
       <div class="grid-toolbar-actions">
-        {{#unless (eq session.status 'ended')}}
+        {{#if canReserve}}
         <button id="reserve-open-btn" class="btn btn-small" type="button">+ Réserver</button>
-        {{/unless}}
+        {{/if}}
         <button id="refresh-btn" class="btn-secondary btn-small" type="button">↻ Actualiser</button>
       </div>
     </div>
@@ -151,17 +179,18 @@
           <div class="matrix-band">{{this.band}}</div>
           {{#each this.cells}}
           {{#if this.free}}
-          {{#unless (eq ../../session.status 'ended')}}
+          {{#if ../../canReserve}}
           <button type="button" class="cell free row-reserve-btn" data-band="{{this.band}}" data-mode="{{this.mode}}"
             title="Réserver {{this.band}} · {{this.mode}}">
             <span class="cell-dot" aria-hidden="true">·</span>
             <span class="cell-reserve" aria-hidden="true">+ Réserver</span>
           </button>
           {{else}}
-          <div class="cell free cell-disabled" data-band="{{this.band}}" data-mode="{{this.mode}}" title="Session terminée">
+          <div class="cell free cell-disabled" data-band="{{this.band}}" data-mode="{{this.mode}}"
+            title="{{#if ../../readOnly}}Session privée : mot de passe requis pour réserver{{else}}Session terminée{{/if}}">
             <span class="cell-dot" aria-hidden="true">·</span>
           </div>
-          {{/unless}}
+          {{/if}}
           {{else}}
           <div class="cell busy" data-band="{{this.band}}" data-mode="{{this.mode}}">
             <div class="cell-row">
@@ -173,12 +202,14 @@
               <span class="cell-info-left">{{#if this.frequency}}{{this.frequency}} kHz{{/if}}</span>
               <span class="cell-info-right">depuis {{formatDateTime this.qrvSince}}</span>
             </div>
+            {{#if ../../canReserve}}
             <form method="POST" action="/sessions/{{../../session.id}}/release" class="cell-qrt"
               data-confirm="Libérer le créneau de {{this.operator}} ?&#10;&#10;{{this.band}} · {{this.mode}}&#10;{{#if this.locator}}{{this.locator}}{{#if this.department}} ({{this.department}}){{/if}}&#10;{{else}}{{#if this.department}}({{this.department}})&#10;{{/if}}{{/if}}{{#if this.frequency}}{{this.frequency}} kHz&#10;{{/if}}QRV depuis {{formatDateTime this.qrvSince}}">
               <input type="hidden" name="band" value="{{this.band}}">
               <input type="hidden" name="mode" value="{{this.mode}}">
               <button type="submit" class="btn-danger btn-small">QRT</button>
             </form>
+            {{/if}}
           </div>
           {{/if}}
           {{/each}}
@@ -194,3 +225,4 @@
 <script src="/js/session-password.js"></script>
 <script src="/js/password-toggle.js"></script>
 <script src="/js/session-reserve.js"></script>
+<script src="/js/session-usage-password.js"></script>
