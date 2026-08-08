@@ -15,11 +15,19 @@ const PORT = process.env.PORT || 3000;
 const STATUS_LABELS = { ongoing: 'En cours', upcoming: 'À venir', ended: 'Terminée' };
 const DATE_FORMATTER = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
 
+function formatDateTime(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 app.engine('handlebars', engine({
   helpers: {
     eq: (a, b) => a === b,
     statusLabel: (status) => STATUS_LABELS[status] ?? status,
-    formatDate: (dateStr) => (dateStr ? DATE_FORMATTER.format(new Date(dateStr)) : '')
+    formatDate: (dateStr) => (dateStr ? DATE_FORMATTER.format(new Date(dateStr)) : ''),
+    formatDateTime
   }
 }));
 app.set('view engine', 'handlebars');
@@ -30,7 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use((req, res, next) => {
-  res.locals.appName = process.env.APP_NAME || 'TM Planning';
+  res.locals.appName = process.env.APP_NAME || 'TMPlanning';
   res.locals.appVersion = APP_VERSION;
   next();
 });

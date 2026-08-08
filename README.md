@@ -1,4 +1,4 @@
-# TM Planning
+# TMPlanning
 
 Application web pour les radioamateurs permettant de déclarer en direct
 qu'un opérateur émet sur une bande et un mode donnés, le temps d'une
@@ -6,7 +6,7 @@ session TM (activité spéciale, contest, événement).
 
 ## Fonctionnalités
 
-- Création de sessions TM Planning (nom, dates, liste d'opérateurs)
+- Création de sessions TMPlanning (nom, dates, liste d'opérateurs)
 - Vue de la grille bande × mode d'une session : qui occupe quoi, en temps réel
 - Réservation d'une bande/mode libre, puis libération (QRT)
 - Édition de la liste d'opérateurs, clôture/réouverture et suppression d'une session

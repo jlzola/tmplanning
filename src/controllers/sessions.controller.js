@@ -33,7 +33,7 @@ function zipOperators(body) {
 function notFound(res) {
   return res.status(404).render('error', {
     title: 'Session introuvable',
-    message: "Cette session TM Planning n'existe pas."
+    message: "Cette session TMPlanning n'existe pas."
   });
 }
 
@@ -237,7 +237,11 @@ export async function bandChartSvg(req, res, next) {
     if (!session) return notFound(res);
 
     const grid = await listGrid(session.id);
-    const svg = renderBandChartSvg({ grid, bands: BANDS, modes: MODES });
+    const requested = req.query.bands;
+    const bands = requested === undefined
+      ? BANDS
+      : BANDS.filter((band) => requested.split(',').includes(band));
+    const svg = renderBandChartSvg({ grid, bands, modes: MODES });
 
     res.setHeader('Content-Type', 'image/svg+xml');
     res.setHeader('Cache-Control', 'no-store');

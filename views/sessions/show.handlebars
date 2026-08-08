@@ -20,6 +20,29 @@
       {{/if}}
     </div>
     <div class="session-actions">
+      <details class="band-filter" id="band-filter">
+        <summary class="btn-secondary btn-small">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polygon points="3 4 21 4 14 12.5 14 19 10 21 10 12.5 3 4"></polygon>
+          </svg>
+          Bandes affichées
+        </summary>
+        <div class="band-filter-menu">
+          <div class="band-filter-actions">
+            <button type="button" id="band-filter-all">Toutes</button>
+            <button type="button" id="band-filter-none">Aucune</button>
+            <button type="button" id="band-filter-hf">HF</button>
+            <button type="button" id="band-filter-vhf">VHF/UHF</button>
+          </div>
+          {{#each bands}}
+          <label class="band-filter-option">
+            <input type="checkbox" value="{{this}}" checked>
+            {{this}}
+          </label>
+          {{/each}}
+        </div>
+      </details>
       <a href="/sessions/{{session.id}}/edit" class="btn-secondary btn-small" id="manage-link"
         data-session-id="{{session.id}}"
         data-locked="{{#if session.passwordHash}}true{{else}}false{{/if}}"
@@ -126,7 +149,7 @@
         </thead>
         <tbody>
           {{#each grid}}
-          <tr class="{{#if this.free}}free{{else}}busy{{/if}}">
+          <tr class="{{#if this.free}}free{{else}}busy{{/if}}" data-band="{{this.band}}">
             <td class="col-band">{{this.band}}</td>
             <td class="col-mode">{{this.mode}}</td>
             <td>
@@ -138,7 +161,7 @@
             <td>{{this.locator}}</td>
             <td>{{this.department}}</td>
             <td>{{this.frequency}}</td>
-            <td>{{this.qrvSince}}</td>
+            <td>{{formatDateTime this.qrvSince}}</td>
             <td>
               {{#if this.free}}
               <button type="button" class="btn-secondary btn-small row-action-btn row-reserve-btn"
@@ -159,6 +182,7 @@
   </div>
 </section>
 
+<script src="/js/band-filter.js"></script>
 <script src="/js/refresh.js"></script>
 <script src="/js/session-password.js"></script>
 <script src="/js/password-toggle.js"></script>

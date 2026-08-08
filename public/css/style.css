@@ -130,7 +130,7 @@ textarea:focus {
 
 .navbar nav a:hover { color: var(--primary); }
 
-/* Marque TM Planning : icône + wordmark bicolore (écho au logo JeloBox) */
+/* Marque TMPlanning : icône + wordmark bicolore (écho au logo JeloBox) */
 .brand-mark {
   display: inline-flex;
   align-items: center;
@@ -247,6 +247,62 @@ textarea:focus {
 .band-chart-panel h2 { margin: 0 0 0.5rem; font-size: 1.15rem; }
 
 .band-chart { display: block; width: 100%; height: auto; }
+
+.band-filter { position: relative; }
+
+.band-filter summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.band-filter summary::-webkit-details-marker { display: none; }
+
+.band-filter-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.4rem);
+  z-index: 10;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(4.5rem, 1fr));
+  gap: 0.4rem 0.75rem;
+  min-width: 16rem;
+}
+
+.band-filter-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.35rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.band-filter-actions button {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.band-filter-option {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
 
 /* Grille des bandes : élément central de la page */
 .grid-panel {

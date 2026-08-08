@@ -1,6 +1,6 @@
 <section>
   <p><a href="/">← Toutes les sessions</a></p>
-  <h1>Nouvelle session TM Planning</h1>
+  <h1>Nouvelle session TMPlanning</h1>
 
   {{#if error}}
   <p class="error">{{error}}</p>
@@ -42,8 +42,7 @@
     <label>
       Mot de passe de gestion (optionnel)
       {{#> password-field}}
-      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}"
-        autocomplete="new-password"
+      <input type="password" name="password" minlength="8" pattern="[A-Za-z0-9]{8,}" autocomplete="new-password"
         title="8 caractères minimum, lettres et chiffres uniquement (pas de caractères spéciaux)"
         placeholder="Laisser vide pour ne pas protéger la session">
       {{/password-field}}

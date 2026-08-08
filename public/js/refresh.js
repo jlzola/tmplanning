@@ -4,7 +4,14 @@ const bandChart = document.getElementById('band-chart');
 const sessionId = table?.dataset.sessionId;
 
 function refreshBandChart() {
-  if (bandChart) bandChart.src = `/sessions/${sessionId}/bands.svg?t=${Date.now()}`;
+  if (bandChart) window.refreshBandChartSrc();
+}
+
+function formatDateTime(isoString) {
+  if (!isoString) return '';
+  const d = new Date(isoString);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
 async function refreshGrid() {
@@ -23,7 +30,7 @@ async function refreshGrid() {
     row.cells[4].textContent = item.locator ?? '';
     row.cells[5].textContent = item.department ?? '';
     row.cells[6].textContent = item.frequency ?? '';
-    row.cells[7].textContent = item.qrvSince ?? '';
+    row.cells[7].textContent = formatDateTime(item.qrvSince);
 
     const actionCell = row.cells[8];
     actionCell.innerHTML = '';

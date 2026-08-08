@@ -1,6 +1,6 @@
 export const BANDS = [
   '160m', '80m', '60m', '40m', '30m', '20m',
-  '17m', '15m', '12m', '10m', '6m', 'QO-100'
+  '17m', '15m', '12m', '10m', '6m', '2m', '70cm', '23cm', 'QO-100'
 ];
 
 export const MODES = ['CW', 'SSB', 'DIGI'];

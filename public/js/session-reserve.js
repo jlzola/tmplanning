@@ -9,8 +9,7 @@
   const operatorSelect = document.getElementById('reserve-operator');
   const frequencyInput = document.getElementById('reserve-frequency');
 
-  const sessionId = document.getElementById('grid-table')?.dataset.sessionId;
-  const lastOperatorKey = sessionId ? `tmplanning:last-operator:${sessionId}` : null;
+  const lastOperatorKey = 'tmplanning:last-operator';
 
   function openDialog(band, mode) {
     const fromRow = Boolean(band && mode);
@@ -18,7 +17,7 @@
     if (band) bandSelect.value = band;
     if (mode) modeSelect.value = mode;
 
-    const lastOperator = lastOperatorKey ? localStorage.getItem(lastOperatorKey) : null;
+    const lastOperator = localStorage.getItem(lastOperatorKey);
     const hasSavedOperator = Boolean(
       lastOperator && [...operatorSelect.options].some((o) => o.value === lastOperator)
     );
@@ -38,7 +37,7 @@
   }
 
   form.addEventListener('submit', () => {
-    if (lastOperatorKey) localStorage.setItem(lastOperatorKey, operatorSelect.value);
+    localStorage.setItem(lastOperatorKey, operatorSelect.value);
   });
 
   const openBtn = document.getElementById('reserve-open-btn');
